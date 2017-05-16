@@ -1,0 +1,143 @@
+<!-- Read from data.flats with owner's name as key -->
+<% flat = data.flats[owner] %>
+<div class="banner-small" style="background-image: linear-gradient(-225deg, rgba(0,101,168,0.6) 0%, rgba(0,36,61,0.6) 50%), url(<%= image_path(flat.picture) %>);">
+</div>
+<div class="header-flat">
+  <div class="container padded">
+    <div class="row">
+      <div class="col-xs-12 col-sm-6 col-sm-offset-1">
+        <div class="header-flat-details">
+          <div class="header-flat-owner text-center">
+            <%= image_tag flat.owner_picture, class: "avatar-xlarge" %>
+            <p><%= flat.owner_name %></p>
+          </div>
+          <div class="header-flat-name">
+            <h4><%= flat.summary %></h4>
+            <p><%= flat.city %></p>
+            <% if flat.rating == 1 %>
+              <i class="fa fa-star" style="color: orange"></i>
+              <i class="fa fa-star" style="color: lightgray"></i>
+              <i class="fa fa-star" style="color: lightgray"></i>
+              <i class="fa fa-star" style="color: lightgray"></i>
+              <i class="fa fa-star" style="color: lightgray"></i>
+            <% elsif flat.rating == 2 %>
+              <i class="fa fa-star" style="color: orange"></i>
+              <i class="fa fa-star" style="color: orange"></i>
+              <i class="fa fa-star" style="color: lightgray"></i>
+              <i class="fa fa-star" style="color: lightgray"></i>
+              <i class="fa fa-star" style="color: lightgray"></i>
+            <% elsif flat.rating == 3 %>
+              <i class="fa fa-star" style="color: orange"></i>
+              <i class="fa fa-star" style="color: orange"></i>
+              <i class="fa fa-star" style="color: orange"></i>
+              <i class="fa fa-star" style="color: lightgray"></i>
+              <i class="fa fa-star" style="color: lightgray"></i>
+            <% elsif flat.rating == 4 %>
+              <i class="fa fa-star" style="color: orange"></i>
+              <i class="fa fa-star" style="color: orange"></i>
+              <i class="fa fa-star" style="color: orange"></i>
+              <i class="fa fa-star" style="color: orange"></i>
+              <i class="fa fa-star" style="color: lightgray"></i>
+            <% elsif flat.rating == 5 %>
+              <i class="fa fa-star" style="color: orange"></i>
+              <i class="fa fa-star" style="color: orange"></i>
+              <i class="fa fa-star" style="color: orange"></i>
+              <i class="fa fa-star" style="color: orange"></i>
+              <i class="fa fa-star" style="color: orange"></i>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-4 ">
+        <div class="form-wrapper-grey">
+          <form action="#">
+            <h4>Book this flat</h4>
+            <div class="form-group">
+              <div class="row">
+                <div class="col-xs-6">
+                  <input type="text" class="form-control" placeholder="checkin" >
+                </div>
+                <div class="col-xs-6">
+                  <input type="text" class="form-control" placeholder="checkout" >
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <select name="" id="" class="form-control">
+                <option value="1">1 guest</option>
+                <option value="2">2 guests</option>
+                <option value="3">3 guests</option>
+              </select>
+            </div>
+            <input type="submit" value="Book it" class="btn btn-danger btn-long"style= "width: 100%">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="flat-description">
+  <div class="container padded">
+    <div class="row">
+      <div class="col-xs-12 col-sm-10 col-xs-offset-1">
+        <h4>About this flat</h4>
+        <p><%= flat.summary %></p>
+        <hr>
+        <div class="row">
+          <div class="col-xs-12 col-sm-2">
+            The space
+          </div>
+          <div class="col-xs-12 col-sm-4">
+            <ul class="list-unstyled">
+              <li>Accommodates: <strong><%= flat.accomodates %></strong></li>
+              <li>Bathrooms: <strong><%= flat.bathrooms %></strong></li>
+              <li>Bed type: <strong><%= flat.bed_type %></strong></li>
+              <li>Bedrooms: <strong><%= flat.bedrooms %></strong></li>
+            </ul>
+          </div>
+          <div class="col-xs-12 col-sm-4">
+            <ul class="list-unstyled">
+              <li>Beds: <strong><%= flat.beds %></strong></li>
+              <li>Property type: <strong><%= flat.property_type %></strong></li>
+              <li>Room type: <strong><%= flat.room_type %></strong></li>
+            </ul>
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-xs-12 col-sm-2">
+            Amenities
+          </div>
+          <div class="col-xs-12 col-sm-4">
+            <ul class="list-unstyled">
+              <li>
+                <% if flat.kitchen %>
+                <i class="fa fa-cutlery"></i> <strong>Kitchen</strong>
+                <% end %>
+              </li>
+              <li>
+                <% if flat.wifi %>
+                <i class="fa fa-wifi"></i> <strong>Wifi</strong>
+                <% end %>
+              </li>
+            </ul>
+          </div>
+          <div class="col-xs-12 col-sm-4">
+            <ul class="list-unstyled">
+              <li>
+                <% if flat.tv %>
+                <i class="fa fa-television"></i> <strong>Television</strong>
+                <% end %>
+              </li>
+              <li>
+                <% if flat.welcome_drinks %>
+                <i class="fa fa-glass"></i> <strong>Welcome drinks</strong>
+                <% end %>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
