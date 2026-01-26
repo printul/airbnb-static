@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lonely Penguin - Help the penguin find friends!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            color: #7ec8e3;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+
+        #gameContainer {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        #gameCanvas {
+            display: block;
+            background: linear-gradient(180deg, #87CEEB 0%, #B0E0E6 60%, #E0FFFF 100%);
+        }
+
+        #ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.1rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            pointer-events: none;
+        }
+
+        #ui div {
+            background: rgba(0,0,0,0.3);
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+
+        #startScreen, #gameOverScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.7);
+            border-radius: 10px;
+        }
+
+        #startScreen h2, #gameOverScreen h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #7ec8e3;
+        }
+
+        #gameOverScreen .finalScore {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        #gameOverScreen .highScore {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            background: linear-gradient(135deg, #7ec8e3, #5ba3c6);
+            border: none;
+            border-radius: 30px;
+            color: #fff;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(126, 200, 227, 0.5);
+        }
+
+        .instructions {
+            margin-top: 20px;
+            text-align: center;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .controls {
+            margin-top: 15px;
+            font-size: 1.5rem;
+        }
+
+        footer {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            opacity: 0.6;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 850px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            #gameCanvas {
+                max-width: 100vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Lonely Penguin</h1>
+    <p class="subtitle">Help the penguin find friends in the Arctic!</p>
+
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="800" height="400"></canvas>
+
+        <div id="ui">
+            <div id="scoreDisplay">Score: 0</div>
+            <div id="lonelinessDisplay">Friends: 0</div>
+            <div id="highScoreDisplay">Best: 0</div>
+        </div>
+
+        <div id="startScreen">
+            <h2>Lonely Penguin</h2>
+            <p class="instructions">
+                A little penguin is all alone in the Arctic.<br>
+                Help it collect fish and find friends!
+            </p>
+            <p class="controls">Press SPACE or TAP to jump</p>
+            <button class="btn" id="startBtn">Start Game</button>
+        </div>
+
+        <div id="gameOverScreen" class="hidden">
+            <h2>Game Over!</h2>
+            <p class="finalScore">Score: <span id="finalScore">0</span></p>
+            <p class="highScore">High Score: <span id="finalHighScore">0</span></p>
+            <p>Friends Found: <span id="friendsFound">0</span></p>
+            <button class="btn" id="restartBtn">Play Again</button>
+        </div>
+    </div>
+
+    <footer>Press SPACE or click/tap to jump over obstacles!</footer>
+
+    <script>
+        // Game Configuration
+        const CONFIG = {
+            gravity: 0.6,
+            jumpForce: -12,
+            groundHeight: 60,
+            penguinWidth: 50,
+            penguinHeight: 60,
+            baseSpeed: 5,
+            maxSpeed: 12,
+            speedIncrement: 0.001,
+            obstacleFrequency: 0.015,
+            fishFrequency: 0.01,
+            friendFrequency: 0.003
+        };
+
+        // Game State
+        let canvas, ctx;
+        let gameRunning = false;
+        let score = 0;
+        let highScore = localStorage.getItem('penguinHighScore') || 0;
+        let friends = 0;
+        let gameSpeed = CONFIG.baseSpeed;
+        let frameCount = 0;
+
+        // Game Objects
+        let penguin = {
+            x: 100,
+            y: 0,
+            vy: 0,
+            width: CONFIG.penguinWidth,
+            height: CONFIG.penguinHeight,
+            grounded: true,
+            jumpCount: 0
+        };
+
+        let obstacles = [];
+        let fish = [];
+        let friendPenguins = [];
+        let particles = [];
+        let clouds = [];
+        let snowflakes = [];
+
+        // Initialize
+        function init() {
+            canvas = document.getElementById('gameCanvas');
+            ctx = canvas.getContext('2d');
+
+            // Update high score display
+            document.getElementById('highScoreDisplay').textContent = `Best: ${highScore}`;
+
+            // Generate initial clouds
+            for (let i = 0; i < 5; i++) {
+                clouds.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * 100 + 20,
+                    size: Math.random() * 40 + 30,
+                    speed: Math.random() * 0.5 + 0.2
+                });
+            }
+
+            // Generate snowflakes
+            for (let i = 0; i < 50; i++) {
+                snowflakes.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 3 + 1,
+                    speed: Math.random() * 1 + 0.5
+                });
+            }
+
+            // Event Listeners
+            document.getElementById('startBtn').addEventListener('click', startGame);
+            document.getElementById('restartBtn').addEventListener('click', startGame);
+            document.addEventListener('keydown', handleKeyDown);
+            canvas.addEventListener('click', handleJump);
+            canvas.addEventListener('touchstart', handleJump);
+
+            // Initial render
+            resetPenguin();
+            render();
+        }
+
+        function startGame() {
+            gameRunning = true;
+            score = 0;
+            friends = 0;
+            gameSpeed = CONFIG.baseSpeed;
+            frameCount = 0;
+            obstacles = [];
+            fish = [];
+            friendPenguins = [];
+            particles = [];
+
+            resetPenguin();
+
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('gameOverScreen').classList.add('hidden');
+
+            gameLoop();
+        }
+
+        function resetPenguin() {
+            penguin.y = canvas.height - CONFIG.groundHeight - penguin.height;
+            penguin.vy = 0;
+            penguin.grounded = true;
+            penguin.jumpCount = 0;
+        }
+
+        function handleKeyDown(e) {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                handleJump();
+            }
+        }
+
+        function handleJump(e) {
+            if (e) e.preventDefault();
+
+            if (!gameRunning) return;
+
+            if (penguin.grounded || penguin.jumpCount < 2) {
+                penguin.vy = CONFIG.jumpForce;
+                penguin.grounded = false;
+                penguin.jumpCount++;
+
+                // Jump particles
+                for (let i = 0; i < 5; i++) {
+                    particles.push({
+                        x: penguin.x + penguin.width / 2,
+                        y: penguin.y + penguin.height,
+                        vx: (Math.random() - 0.5) * 4,
+                        vy: Math.random() * 2,
+                        life: 20,
+                        color: '#fff'
+                    });
+                }
+            }
+        }
+
+        function gameLoop() {
+            if (!gameRunning) return;
+
+            update();
+            render();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function update() {
+            frameCount++;
+
+            // Increase speed over time
+            gameSpeed = Math.min(CONFIG.maxSpeed, CONFIG.baseSpeed + frameCount * CONFIG.speedIncrement);
+
+            // Update penguin physics
+            penguin.vy += CONFIG.gravity;
+            penguin.y += penguin.vy;
+
+            // Ground collision
+            const groundY = canvas.height - CONFIG.groundHeight - penguin.height;
+            if (penguin.y >= groundY) {
+                penguin.y = groundY;
+                penguin.vy = 0;
+                penguin.grounded = true;
+                penguin.jumpCount = 0;
+            }
+
+            // Spawn obstacles
+            if (Math.random() < CONFIG.obstacleFrequency * (gameSpeed / CONFIG.baseSpeed)) {
+                const lastObstacle = obstacles[obstacles.length - 1];
+                if (!lastObstacle || lastObstacle.x < canvas.width - 200) {
+                    spawnObstacle();
+                }
+            }
+
+            // Spawn fish
+            if (Math.random() < CONFIG.fishFrequency) {
+                spawnFish();
+            }
+
+            // Spawn friend penguins (rare)
+            if (Math.random() < CONFIG.friendFrequency) {
+                spawnFriend();
+            }
+
+            // Update obstacles
+            obstacles = obstacles.filter(obs => {
+                obs.x -= gameSpeed;
+
+                // Collision check
+                if (checkCollision(penguin, obs)) {
+                    gameOver();
+                    return false;
+                }
+
+                return obs.x > -obs.width;
+            });
+
+            // Update fish
+            fish = fish.filter(f => {
+                f.x -= gameSpeed;
+                f.y += Math.sin(frameCount * 0.1 + f.offset) * 0.5;
+
+                // Collection check
+                if (checkCollision(penguin, f)) {
+                    score += 10;
+                    createCollectParticles(f.x, f.y, '#FFD700');
+                    return false;
+                }
+
+                return f.x > -f.width;
+            });
+
+            // Update friend penguins
+            friendPenguins = friendPenguins.filter(f => {
+                f.x -= gameSpeed * 0.8;
+
+                // Collection check
+                if (checkCollision(penguin, f)) {
+                    friends++;
+                    score += 50;
+                    createCollectParticles(f.x, f.y, '#FF69B4');
+                    return false;
+                }
+
+                return f.x > -f.width;
+            });
+
+            // Update particles
+            particles = particles.filter(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life--;
+                return p.life > 0;
+            });
+
+            // Update clouds
+            clouds.forEach(cloud => {
+                cloud.x -= cloud.speed;
+                if (cloud.x < -cloud.size) {
+                    cloud.x = canvas.width + cloud.size;
+                    cloud.y = Math.random() * 100 + 20;
+                }
+            });
+
+            // Update snowflakes
+            snowflakes.forEach(snow => {
+                snow.y += snow.speed;
+                snow.x += Math.sin(frameCount * 0.02 + snow.x) * 0.3;
+                if (snow.y > canvas.height) {
+                    snow.y = 0;
+                    snow.x = Math.random() * canvas.width;
+                }
+            });
+
+            // Update score
+            score += 0.1;
+
+            // Update UI
+            document.getElementById('scoreDisplay').textContent = `Score: ${Math.floor(score)}`;
+            document.getElementById('lonelinessDisplay').textContent = `Friends: ${friends}`;
+        }
+
+        function spawnObstacle() {
+            const types = ['iceberg', 'snowman', 'rock'];
+            const type = types[Math.floor(Math.random() * types.length)];
+
+            let width, height;
+            switch(type) {
+                case 'iceberg':
+                    width = 40 + Math.random() * 30;
+                    height = 50 + Math.random() * 40;
+                    break;
+                case 'snowman':
+                    width = 35;
+                    height = 70;
+                    break;
+                case 'rock':
+                    width = 45;
+                    height = 35;
+                    break;
+            }
+
+            obstacles.push({
+                x: canvas.width,
+                y: canvas.height - CONFIG.groundHeight - height,
+                width: width,
+                height: height,
+                type: type
+            });
+        }
+
+        function spawnFish() {
+            fish.push({
+                x: canvas.width,
+                y: canvas.height - CONFIG.groundHeight - 80 - Math.random() * 100,
+                width: 30,
+                height: 20,
+                offset: Math.random() * Math.PI * 2
+            });
+        }
+
+        function spawnFriend() {
+            friendPenguins.push({
+                x: canvas.width,
+                y: canvas.height - CONFIG.groundHeight - 50,
+                width: 40,
+                height: 50
+            });
+        }
+
+        function checkCollision(a, b) {
+            const padding = 5;
+            return a.x + padding < b.x + b.width - padding &&
+                   a.x + a.width - padding > b.x + padding &&
+                   a.y + padding < b.y + b.height - padding &&
+                   a.y + a.height - padding > b.y + padding;
+        }
+
+        function createCollectParticles(x, y, color) {
+            for (let i = 0; i < 10; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 6,
+                    vy: (Math.random() - 0.5) * 6,
+                    life: 30,
+                    color: color
+                });
+            }
+        }
+
+        function gameOver() {
+            gameRunning = false;
+
+            if (score > highScore) {
+                highScore = Math.floor(score);
+                localStorage.setItem('penguinHighScore', highScore);
+            }
+
+            document.getElementById('finalScore').textContent = Math.floor(score);
+            document.getElementById('finalHighScore').textContent = highScore;
+            document.getElementById('friendsFound').textContent = friends;
+            document.getElementById('highScoreDisplay').textContent = `Best: ${highScore}`;
+            document.getElementById('gameOverScreen').classList.remove('hidden');
+        }
+
+        function render() {
+            // Clear canvas
+            ctx.fillStyle = '#87CEEB';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw sky gradient
+            const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height - CONFIG.groundHeight);
+            skyGradient.addColorStop(0, '#87CEEB');
+            skyGradient.addColorStop(0.7, '#B0E0E6');
+            skyGradient.addColorStop(1, '#E0FFFF');
+            ctx.fillStyle = skyGradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height - CONFIG.groundHeight);
+
+            // Draw clouds
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            clouds.forEach(cloud => {
+                drawCloud(cloud.x, cloud.y, cloud.size);
+            });
+
+            // Draw snowflakes
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            snowflakes.forEach(snow => {
+                ctx.beginPath();
+                ctx.arc(snow.x, snow.y, snow.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Draw mountains in background
+            drawMountains();
+
+            // Draw ground
+            const groundGradient = ctx.createLinearGradient(0, canvas.height - CONFIG.groundHeight, 0, canvas.height);
+            groundGradient.addColorStop(0, '#F0F8FF');
+            groundGradient.addColorStop(0.3, '#E6F3FF');
+            groundGradient.addColorStop(1, '#B8D4E8');
+            ctx.fillStyle = groundGradient;
+            ctx.fillRect(0, canvas.height - CONFIG.groundHeight, canvas.width, CONFIG.groundHeight);
+
+            // Draw ice line
+            ctx.strokeStyle = '#A0C4D8';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height - CONFIG.groundHeight);
+            ctx.lineTo(canvas.width, canvas.height - CONFIG.groundHeight);
+            ctx.stroke();
+
+            // Draw obstacles
+            obstacles.forEach(obs => drawObstacle(obs));
+
+            // Draw fish
+            fish.forEach(f => drawFish(f.x, f.y));
+
+            // Draw friend penguins
+            friendPenguins.forEach(f => drawFriendPenguin(f.x, f.y));
+
+            // Draw main penguin
+            drawPenguin(penguin.x, penguin.y);
+
+            // Draw particles
+            particles.forEach(p => {
+                ctx.globalAlpha = p.life / 30;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            ctx.globalAlpha = 1;
+        }
+
+        function drawCloud(x, y, size) {
+            ctx.beginPath();
+            ctx.arc(x, y, size * 0.5, 0, Math.PI * 2);
+            ctx.arc(x + size * 0.4, y - size * 0.1, size * 0.4, 0, Math.PI * 2);
+            ctx.arc(x + size * 0.8, y, size * 0.35, 0, Math.PI * 2);
+            ctx.arc(x + size * 0.4, y + size * 0.2, size * 0.3, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function drawMountains() {
+            // Far mountains
+            ctx.fillStyle = '#C8D8E8';
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height - CONFIG.groundHeight);
+            ctx.lineTo(100, canvas.height - CONFIG.groundHeight - 80);
+            ctx.lineTo(200, canvas.height - CONFIG.groundHeight);
+            ctx.lineTo(280, canvas.height - CONFIG.groundHeight - 100);
+            ctx.lineTo(380, canvas.height - CONFIG.groundHeight);
+            ctx.lineTo(450, canvas.height - CONFIG.groundHeight - 70);
+            ctx.lineTo(550, canvas.height - CONFIG.groundHeight);
+            ctx.lineTo(620, canvas.height - CONFIG.groundHeight - 90);
+            ctx.lineTo(720, canvas.height - CONFIG.groundHeight);
+            ctx.lineTo(800, canvas.height - CONFIG.groundHeight - 60);
+            ctx.lineTo(canvas.width, canvas.height - CONFIG.groundHeight);
+            ctx.fill();
+        }
+
+        function drawPenguin(x, y) {
+            // Body
+            ctx.fillStyle = '#1a1a2e';
+            ctx.beginPath();
+            ctx.ellipse(x + 25, y + 35, 20, 25, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // White belly
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.ellipse(x + 25, y + 38, 12, 18, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Head
+            ctx.fillStyle = '#1a1a2e';
+            ctx.beginPath();
+            ctx.arc(x + 25, y + 12, 15, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Eyes
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(x + 20, y + 10, 5, 0, Math.PI * 2);
+            ctx.arc(x + 30, y + 10, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Pupils
+            ctx.fillStyle = '#1a1a2e';
+            ctx.beginPath();
+            ctx.arc(x + 21, y + 10, 2, 0, Math.PI * 2);
+            ctx.arc(x + 31, y + 10, 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Beak
+            ctx.fillStyle = '#FFA500';
+            ctx.beginPath();
+            ctx.moveTo(x + 25, y + 14);
+            ctx.lineTo(x + 32, y + 18);
+            ctx.lineTo(x + 25, y + 22);
+            ctx.closePath();
+            ctx.fill();
+
+            // Feet
+            ctx.fillStyle = '#FFA500';
+            ctx.beginPath();
+            ctx.ellipse(x + 18, y + 58, 8, 4, -0.3, 0, Math.PI * 2);
+            ctx.ellipse(x + 32, y + 58, 8, 4, 0.3, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Wings
+            ctx.fillStyle = '#1a1a2e';
+            ctx.beginPath();
+            ctx.ellipse(x + 5, y + 35, 6, 15, -0.3, 0, Math.PI * 2);
+            ctx.ellipse(x + 45, y + 35, 6, 15, 0.3, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function drawFriendPenguin(x, y) {
+            // Smaller, cuter friend penguin
+            const scale = 0.8;
+
+            // Body
+            ctx.fillStyle = '#2d2d44';
+            ctx.beginPath();
+            ctx.ellipse(x + 20, y + 30, 16 * scale, 20 * scale, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // White belly
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.ellipse(x + 20, y + 32, 10 * scale, 14 * scale, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Head
+            ctx.fillStyle = '#2d2d44';
+            ctx.beginPath();
+            ctx.arc(x + 20, y + 12, 12 * scale, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Eyes
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(x + 16, y + 10, 4 * scale, 0, Math.PI * 2);
+            ctx.arc(x + 24, y + 10, 4 * scale, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Pupils (looking at player)
+            ctx.fillStyle = '#2d2d44';
+            ctx.beginPath();
+            ctx.arc(x + 15, y + 10, 2 * scale, 0, Math.PI * 2);
+            ctx.arc(x + 23, y + 10, 2 * scale, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Beak
+            ctx.fillStyle = '#FF8C00';
+            ctx.beginPath();
+            ctx.moveTo(x + 20, y + 13);
+            ctx.lineTo(x + 26, y + 16);
+            ctx.lineTo(x + 20, y + 19);
+            ctx.closePath();
+            ctx.fill();
+
+            // Cute heart above head
+            ctx.fillStyle = '#FF69B4';
+            drawHeart(x + 15, y - 10, 8);
+        }
+
+        function drawHeart(x, y, size) {
+            ctx.beginPath();
+            ctx.moveTo(x, y + size / 4);
+            ctx.bezierCurveTo(x, y, x - size / 2, y, x - size / 2, y + size / 4);
+            ctx.bezierCurveTo(x - size / 2, y + size / 2, x, y + size * 0.75, x, y + size);
+            ctx.bezierCurveTo(x, y + size * 0.75, x + size / 2, y + size / 2, x + size / 2, y + size / 4);
+            ctx.bezierCurveTo(x + size / 2, y, x, y, x, y + size / 4);
+            ctx.fill();
+        }
+
+        function drawFish(x, y) {
+            // Fish body
+            ctx.fillStyle = '#FFD700';
+            ctx.beginPath();
+            ctx.ellipse(x + 15, y + 10, 12, 8, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Tail
+            ctx.beginPath();
+            ctx.moveTo(x + 3, y + 10);
+            ctx.lineTo(x - 5, y + 2);
+            ctx.lineTo(x - 5, y + 18);
+            ctx.closePath();
+            ctx.fill();
+
+            // Eye
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(x + 20, y + 8, 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Shine
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.beginPath();
+            ctx.arc(x + 12, y + 6, 3, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function drawObstacle(obs) {
+            switch(obs.type) {
+                case 'iceberg':
+                    // Iceberg
+                    ctx.fillStyle = '#E8F4F8';
+                    ctx.beginPath();
+                    ctx.moveTo(obs.x + obs.width / 2, obs.y);
+                    ctx.lineTo(obs.x + obs.width, obs.y + obs.height);
+                    ctx.lineTo(obs.x, obs.y + obs.height);
+                    ctx.closePath();
+                    ctx.fill();
+
+                    // Iceberg shine
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                    ctx.beginPath();
+                    ctx.moveTo(obs.x + obs.width * 0.4, obs.y + obs.height * 0.2);
+                    ctx.lineTo(obs.x + obs.width * 0.5, obs.y + obs.height * 0.7);
+                    ctx.lineTo(obs.x + obs.width * 0.3, obs.y + obs.height * 0.7);
+                    ctx.closePath();
+                    ctx.fill();
+                    break;
+
+                case 'snowman':
+                    // Bottom ball
+                    ctx.fillStyle = '#fff';
+                    ctx.beginPath();
+                    ctx.arc(obs.x + 17, obs.y + obs.height - 15, 15, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Middle ball
+                    ctx.beginPath();
+                    ctx.arc(obs.x + 17, obs.y + obs.height - 40, 12, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Head
+                    ctx.beginPath();
+                    ctx.arc(obs.x + 17, obs.y + obs.height - 58, 9, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Eyes
+                    ctx.fillStyle = '#000';
+                    ctx.beginPath();
+                    ctx.arc(obs.x + 14, obs.y + obs.height - 60, 2, 0, Math.PI * 2);
+                    ctx.arc(obs.x + 20, obs.y + obs.height - 60, 2, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Nose (carrot)
+                    ctx.fillStyle = '#FFA500';
+                    ctx.beginPath();
+                    ctx.moveTo(obs.x + 17, obs.y + obs.height - 57);
+                    ctx.lineTo(obs.x + 27, obs.y + obs.height - 55);
+                    ctx.lineTo(obs.x + 17, obs.y + obs.height - 53);
+                    ctx.closePath();
+                    ctx.fill();
+                    break;
+
+                case 'rock':
+                    // Rock
+                    ctx.fillStyle = '#6B7B8C';
+                    ctx.beginPath();
+                    ctx.moveTo(obs.x + 5, obs.y + obs.height);
+                    ctx.lineTo(obs.x, obs.y + obs.height * 0.6);
+                    ctx.lineTo(obs.x + 10, obs.y);
+                    ctx.lineTo(obs.x + 30, obs.y + 5);
+                    ctx.lineTo(obs.x + obs.width, obs.y + obs.height * 0.4);
+                    ctx.lineTo(obs.x + obs.width - 5, obs.y + obs.height);
+                    ctx.closePath();
+                    ctx.fill();
+
+                    // Rock highlight
+                    ctx.fillStyle = '#8B9CAC';
+                    ctx.beginPath();
+                    ctx.moveTo(obs.x + 10, obs.y + 5);
+                    ctx.lineTo(obs.x + 20, obs.y + obs.height * 0.3);
+                    ctx.lineTo(obs.x + 15, obs.y + obs.height * 0.5);
+                    ctx.closePath();
+                    ctx.fill();
+                    break;
+            }
+        }
+
+        // Start the game when page loads
+        window.onload = init;
+    </script>
+</body>
+</html>
