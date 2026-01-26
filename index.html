@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lonely Penguin - A philosophical journey</title>
+    <title>Lonely Penguin - A journey of reflection</title>
     <style>
         * {
             margin: 0;
@@ -12,22 +12,24 @@
         }
 
         body {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            background: linear-gradient(180deg, #7A8FA3 0%, #A3B5C4 40%, #C5D0DA 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #fff;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            color: #2C3E50;
             overflow-x: hidden;
         }
 
         h1 {
             font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            color: #7ec8e3;
+            margin-bottom: 8px;
+            text-shadow: 1px 1px 3px rgba(255,255,255,0.5);
+            color: #3D5A73;
+            font-weight: normal;
+            letter-spacing: 2px;
         }
 
         .subtitle {
@@ -35,18 +37,18 @@
             margin-bottom: 20px;
             opacity: 0.8;
             font-style: italic;
+            color: #5A7A94;
         }
 
         #gameContainer {
             position: relative;
-            border-radius: 10px;
+            border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 8px 32px rgba(60, 80, 100, 0.3);
         }
 
         #gameCanvas {
             display: block;
-            background: linear-gradient(180deg, #87CEEB 0%, #B0E0E6 60%, #E0FFFF 100%);
         }
 
         #ui {
@@ -56,15 +58,18 @@
             right: 10px;
             display: flex;
             justify-content: space-between;
-            font-size: 1.1rem;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            font-size: 1rem;
+            font-family: 'Segoe UI', sans-serif;
             pointer-events: none;
         }
 
         #ui div {
-            background: rgba(0,0,0,0.3);
-            padding: 8px 15px;
+            background: rgba(255,255,255,0.25);
+            backdrop-filter: blur(4px);
+            padding: 8px 16px;
             border-radius: 20px;
+            color: #3D5A73;
+            text-shadow: 0 1px 2px rgba(255,255,255,0.5);
         }
 
         #startScreen, #gameOverScreen, #talkScreen {
@@ -77,75 +82,82 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: rgba(0,0,0,0.7);
-            border-radius: 10px;
+            background: rgba(180, 195, 210, 0.85);
+            backdrop-filter: blur(8px);
+            border-radius: 8px;
         }
 
         #startScreen h2, #gameOverScreen h2, #talkScreen h2 {
             font-size: 2rem;
-            margin-bottom: 20px;
-            color: #7ec8e3;
+            margin-bottom: 15px;
+            color: #3D5A73;
+            font-weight: normal;
+            letter-spacing: 1px;
         }
 
         #gameOverScreen .finalScore {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            color: #4A6B8A;
         }
 
         #gameOverScreen .highScore {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            color: #ffd700;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #6A8CAA;
         }
 
         .btn {
-            padding: 15px 40px;
-            font-size: 1.2rem;
-            background: linear-gradient(135deg, #7ec8e3, #5ba3c6);
+            padding: 14px 36px;
+            font-size: 1.1rem;
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #5A7A94, #4A6B8A);
             border: none;
-            border-radius: 30px;
+            border-radius: 25px;
             color: #fff;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
             margin: 8px;
+            letter-spacing: 1px;
         }
 
         .btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 20px rgba(126, 200, 227, 0.5);
+            transform: scale(1.03);
+            box-shadow: 0 4px 16px rgba(74, 107, 138, 0.4);
         }
 
         .btn-talk {
-            background: linear-gradient(135deg, #9b59b6, #8e44ad);
-        }
-
-        .btn-talk:hover {
-            box-shadow: 0 5px 20px rgba(155, 89, 182, 0.5);
+            background: linear-gradient(135deg, #7A8FA3, #6A8099);
         }
 
         .btn-back {
-            background: linear-gradient(135deg, #636e72, #4a5568);
-            padding: 10px 25px;
-            font-size: 1rem;
+            background: linear-gradient(135deg, #8B9CAD, #7A8B9C);
+            padding: 10px 24px;
+            font-size: 0.95rem;
         }
 
         .instructions {
-            margin-top: 20px;
+            margin-top: 15px;
             text-align: center;
             opacity: 0.9;
-            line-height: 1.6;
+            line-height: 1.7;
+            color: #4A6B8A;
+            max-width: 400px;
         }
 
         .controls {
-            margin-top: 15px;
-            font-size: 1.2rem;
+            margin-top: 12px;
+            font-size: 0.95rem;
             opacity: 0.7;
+            font-family: 'Segoe UI', sans-serif;
         }
 
         footer {
             margin-top: 20px;
             font-size: 0.9rem;
             opacity: 0.6;
+            color: #5A7A94;
+            font-style: italic;
         }
 
         .hidden {
@@ -156,15 +168,15 @@
         #talkScreen {
             padding: 20px;
             justify-content: flex-start;
-            padding-top: 40px;
+            padding-top: 35px;
         }
 
         #chatContainer {
-            width: 90%;
-            max-width: 700px;
-            height: 220px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 15px;
+            width: 92%;
+            max-width: 720px;
+            height: 230px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 12px;
             padding: 15px;
             overflow-y: auto;
             margin-bottom: 15px;
@@ -173,37 +185,42 @@
         }
 
         .message {
-            margin: 8px 0;
-            padding: 10px 15px;
-            border-radius: 15px;
-            max-width: 80%;
+            margin: 6px 0;
+            padding: 10px 16px;
+            border-radius: 16px;
+            max-width: 82%;
             animation: fadeIn 0.3s ease;
+            font-size: 0.95rem;
+            line-height: 1.5;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .penguin-message {
-            background: linear-gradient(135deg, #2d3436, #636e72);
+            background: rgba(255,255,255,0.6);
             align-self: flex-start;
-            border-bottom-left-radius: 5px;
+            border-bottom-left-radius: 4px;
+            color: #3D5A73;
         }
 
         .penguin-message::before {
-            content: "🐧 ";
+            content: "~ ";
+            opacity: 0.5;
         }
 
         .user-message {
-            background: linear-gradient(135deg, #5ba3c6, #7ec8e3);
+            background: linear-gradient(135deg, #5A7A94, #4A6B8A);
             align-self: flex-end;
-            border-bottom-right-radius: 5px;
+            border-bottom-right-radius: 4px;
+            color: #fff;
         }
 
         #chatInput {
-            width: 90%;
-            max-width: 700px;
+            width: 92%;
+            max-width: 720px;
             display: flex;
             gap: 10px;
         }
@@ -213,37 +230,39 @@
             padding: 12px 20px;
             border: none;
             border-radius: 25px;
-            background: rgba(255,255,255,0.1);
-            color: #fff;
+            background: rgba(255,255,255,0.5);
+            color: #3D5A73;
             font-size: 1rem;
+            font-family: 'Georgia', serif;
             outline: none;
         }
 
         #userInput::placeholder {
-            color: rgba(255,255,255,0.5);
+            color: rgba(61, 90, 115, 0.5);
         }
 
         #userInput:focus {
-            background: rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.7);
         }
 
         #sendBtn {
-            padding: 12px 25px;
-            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #5A7A94, #4A6B8A);
             border: none;
             border-radius: 25px;
             color: #fff;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.95rem;
+            font-family: 'Georgia', serif;
             transition: transform 0.2s;
         }
 
         #sendBtn:hover {
-            transform: scale(1.05);
+            transform: scale(1.03);
         }
 
         .thinking {
-            opacity: 0.7;
+            opacity: 0.6;
             font-style: italic;
         }
 
@@ -260,35 +279,31 @@
 
         .philosophical-quote {
             font-style: italic;
-            opacity: 0.8;
-            margin-top: 10px;
+            opacity: 0.85;
+            margin-top: 12px;
             font-size: 0.95rem;
             text-align: center;
-            max-width: 500px;
+            max-width: 480px;
+            color: #5A7A94;
+            line-height: 1.5;
         }
 
         @media (max-width: 850px) {
-            h1 {
-                font-size: 1.8rem;
-            }
-            #gameCanvas {
-                max-width: 100vw;
-            }
-            #chatContainer {
-                height: 180px;
-            }
+            h1 { font-size: 1.9rem; }
+            #gameCanvas { max-width: 100vw; }
+            #chatContainer { height: 190px; }
         }
     </style>
 </head>
 <body>
     <h1>Lonely Penguin</h1>
-    <p class="subtitle">"In the vast whiteness, I found myself... and lost myself."</p>
+    <p class="subtitle">Every journey begins with a single step across the ice.</p>
 
     <div id="gameContainer">
         <canvas id="gameCanvas" width="800" height="400"></canvas>
 
         <div id="ui" class="hidden">
-            <div id="scoreDisplay">Score: 0</div>
+            <div id="scoreDisplay">Distance: 0</div>
             <div id="lonelinessDisplay">Friends: 0</div>
             <div id="highScoreDisplay">Best: 0</div>
         </div>
@@ -296,149 +311,149 @@
         <div id="startScreen">
             <h2>Lonely Penguin</h2>
             <p class="instructions">
-                A little penguin stands alone in the Arctic.<br>
-                What would you like to do?
+                A small penguin stands before an endless horizon.<br>
+                The journey ahead is yours to take.
             </p>
-            <div style="display: flex; flex-direction: column; align-items: center; margin-top: 20px;">
-                <button class="btn" id="startBtn">Play Game</button>
-                <button class="btn btn-talk" id="talkBtn">Talk to Penguin</button>
+            <div style="display: flex; flex-direction: column; align-items: center; margin-top: 18px;">
+                <button class="btn" id="startBtn">Begin Journey</button>
+                <button class="btn btn-talk" id="talkBtn">Sit & Reflect</button>
             </div>
             <p class="controls">SPACE to jump | T to talk</p>
         </div>
 
         <div id="gameOverScreen" class="hidden">
-            <h2>The Journey Ends...</h2>
+            <h2>A Moment to Rest</h2>
             <p class="finalScore">Distance traveled: <span id="finalScore">0</span></p>
             <p class="highScore">Longest journey: <span id="finalHighScore">0</span></p>
-            <p>Connections made: <span id="friendsFound">0</span></p>
+            <p style="color: #5A7A94;">Connections made: <span id="friendsFound">0</span></p>
             <p class="philosophical-quote" id="deathQuote"></p>
             <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button class="btn" id="restartBtn">Try Again</button>
+                <button class="btn" id="restartBtn">Continue On</button>
                 <button class="btn btn-talk" id="talkAfterBtn">Reflect</button>
             </div>
         </div>
 
         <div id="talkScreen" class="hidden">
-            <h2>A Moment of Reflection</h2>
+            <h2>A Quiet Moment</h2>
             <div id="chatContainer"></div>
             <div id="chatInput">
-                <input type="text" id="userInput" placeholder="Say something to the penguin..." maxlength="200">
+                <input type="text" id="userInput" placeholder="Share your thoughts..." maxlength="200">
                 <button id="sendBtn">Send</button>
             </div>
-            <button class="btn btn-back" id="backBtn" style="margin-top: 15px;">Back</button>
+            <button class="btn btn-back" id="backBtn" style="margin-top: 15px;">Return</button>
         </div>
     </div>
 
-    <footer>A meditation on existence, friendship, and fish.</footer>
+    <footer>Sometimes the longest journeys lead us back to ourselves.</footer>
 
     <script>
-        // Philosophical Penguin Dialogue System
+        // Philosophical Penguin Dialogue System - Hopeful & Warm
         const PENGUIN_THOUGHTS = {
             greetings: [
-                "Oh... hello. I didn't expect anyone to come talk to me out here.",
-                "You came all this way just to speak with me? How... unexpected.",
-                "The ice reflects everything except what I want to see. But please, sit.",
-                "*looks up slowly* Another soul wandering through the void?",
-                "Welcome to my corner of the infinite white. It's not much, but it's honest."
+                "Oh, hello there. It's nice to have company. The ice feels less vast when shared.",
+                "You stopped to talk? That's... really kind. Pull up some ice, stay awhile.",
+                "*shuffles over to make room* Welcome, friend. The view is better together.",
+                "I was just watching the mountains. Funny how they seem closer when someone's beside you.",
+                "Hello! I was hoping someone might pass by today. The universe provides."
             ],
             loneliness: [
-                "Sometimes I wonder if the other penguins left, or if I was never really with them to begin with.",
-                "The worst part of loneliness isn't being alone. It's forgetting what togetherness felt like.",
-                "I used to count the days. Now I just count the snowflakes. There are always more snowflakes.",
-                "They say penguins huddle for warmth. I've been cold for so long I've forgotten what warmth means.",
-                "Every penguin I meet eventually walks away. Maybe I'm meant to be a waypoint, not a destination.",
-                "The silence here is so loud. Do you hear it too?"
+                "Being alone taught me to enjoy my own company. That's a gift, I think.",
+                "Loneliness isn't the absence of others - it's forgetting that connection is always possible.",
+                "I used to fear the quiet. Now I hear the ice singing. It was always singing, I just wasn't listening.",
+                "Even alone, I'm part of something larger. The ice, the sky, the stars at night. We're all connected.",
+                "Sometimes solitude is just the space we need to grow into ourselves.",
+                "The funny thing about feeling lonely? It means you have love to give. That's beautiful."
             ],
             existence: [
-                "Why do we waddle forward? Is there a destination, or just more ice?",
-                "I've been thinking... if a penguin contemplates existence on an ice floe, and no one is around, does the thought exist?",
-                "The horizon never gets closer, no matter how far I walk. Perhaps that's the point.",
-                "We're all just temporary arrangements of matter, briefly aware of the cold.",
-                "I exist, therefore I... wait, do I? What proof do I have besides this persistent sense of being?",
-                "The ice will melt someday. And what was the point of standing on it?",
-                "Each fish I eat becomes part of me. Am I still me? Was I ever?"
+                "I exist! Isn't that remarkable? Out of infinite possibilities, here we are, talking.",
+                "I think, therefore I waddle. And waddling is its own kind of purpose.",
+                "The ice beneath my feet, the sky above - every moment is a small miracle when you really look.",
+                "We're all just stardust that learned to wonder about itself. How amazing is that?",
+                "Existence is the universe's way of experiencing itself. We're the cosmos having a conversation!",
+                "I may be small on this big ice, but I contain multitudes. We all do."
             ],
             meaning: [
-                "I used to think finding friends would fill the emptiness. Now I'm not sure the emptiness is meant to be filled.",
-                "Perhaps meaning isn't found. Perhaps it's just something we tell ourselves while we wait for the inevitable.",
-                "The fish don't wonder about meaning. Sometimes I envy them. Then I eat them. Then I feel guilty.",
-                "What if the search for meaning IS the meaning? ...No, that can't be right. That's too convenient.",
-                "I've decided that the meaning of life is to ask about the meaning of life. It's recursive, like my despair.",
-                "Maybe we're not supposed to find meaning. Maybe we're supposed to create it. But out of what? Snow?"
+                "I've stopped searching for THE meaning. Instead, I find little meanings everywhere - a warm fish, a kind word, a beautiful sunset.",
+                "Maybe meaning isn't something we find. Maybe it's something we create, one moment at a time.",
+                "The search for meaning IS meaningful. The question IS the answer. Isn't that freeing?",
+                "I think meaning is like the horizon - always ahead, always guiding, but the joy is in the walking.",
+                "You know what gives me meaning? Moments like this. Connection. Presence. That's enough.",
+                "Purpose might just be paying attention to what's beautiful and sharing it with others."
             ],
             friendship: [
-                "I met another penguin once. We stood together for a while. Then the ice cracked and we drifted apart. Literally.",
-                "Friendship is just two beings agreeing to be lonely together. It's beautiful, in a way.",
-                "I wonder if my friends think about me. I wonder if I have friends. I wonder if 'friends' is just a word we made up.",
-                "The fish are my friends. Brief friends. Very brief. Delicious friends.",
-                "Connection is terrifying. You open yourself up just to watch the other person walk away across the ice.",
-                "Perhaps the friends were the penguins we imagined along the way."
+                "Every friend I've made started as a stranger on the ice. That gives me hope about everyone I haven't met yet.",
+                "Friendship is choosing each other, over and over. Even across distance. Even in silence.",
+                "The friends who stay, the friends who go - they all leave footprints on my heart. I'm grateful for each one.",
+                "Connection doesn't require being together always. Some friends are like stars - distant but constant.",
+                "I believe everyone we meet teaches us something. Every encounter is a gift.",
+                "The best friendships feel like coming home, even in the middle of an ice field."
             ],
             hope: [
-                "Sometimes the aurora appears, and I remember that beauty exists. Then it fades, and I remember that nothing lasts.",
-                "Hope is a fish you can see under the ice but never quite catch.",
-                "I saw a flower once. Frozen in the ice. Still beautiful. Still dead. Still hopeful, somehow.",
-                "Tomorrow the sun might shine. Or it might not. But it will rise. That's... something.",
-                "Every ending is a beginning, they say. I'm still waiting for my beginning to begin.",
-                "The ice melts. New ice forms. Maybe that's hope. Maybe that's just thermodynamics."
+                "Hope is choosing to see the dawn before the night ends. And dawn always comes.",
+                "Every step forward is an act of hope. Look at us, still stepping!",
+                "The ice melts, reforms, changes - but it endures. So do we. So does hope.",
+                "I've seen storms pass. I've seen the aurora appear when I least expected it. Good things come.",
+                "Hope isn't naive - it's brave. It's saying 'yes' to tomorrow before you know what it holds.",
+                "Even on the coldest nights, I know the sun is just beyond the horizon. That's hope."
             ],
             absurd: [
-                "I am a flightless bird who lives on ice and eats fish. The universe has a strange sense of humor.",
-                "Imagine being designed for swimming but spending most of your time standing around. That's my life.",
-                "The humans put us in zoos and call it 'conservation.' We stand on fake ice and contemplate fake existence.",
-                "I just realized I've been talking to my own reflection. Again. At least we agree on things.",
-                "Why do I even have wings? Just to remind me of what I can't do?",
-                "Sometimes I slide on my belly just to feel something. The void judges me, but the void judges everyone."
+                "I'm a bird who can't fly but can swim like a torpedo. Life has a wonderful sense of humor!",
+                "The universe gave me a tuxedo for standing on ice. I choose to believe that's delightful, not absurd.",
+                "Sometimes I waddle in circles just because it feels good. Not everything needs a reason!",
+                "Wings that became flippers - that's not a loss, it's an evolution. We adapt, we grow, we find new ways.",
+                "The absurdity of existence is what makes it interesting. Predictable would be boring!",
+                "I slide on my belly for fun. Life should include more belly-sliding, metaphorically speaking."
             ],
             fish: [
-                "Fish don't have to think about any of this. They just swim until they don't. Peak existence.",
-                "I eat fish to survive. Fish eat smaller things. It's just consumption all the way down.",
-                "The best fish is the fish you're about to catch. Once caught, it's just... fish.",
-                "I named a fish once. Harold. We had a moment. Then I got hungry.",
-                "Fish are friends. Fish are food. Fish are the fundamental contradiction of penguin existence."
+                "A good fish is one of life's simple pleasures. Never underestimate simple pleasures!",
+                "Fish teach me presence - they're always in the moment. Swim, eat, be. There's wisdom there.",
+                "I'm grateful for fish. Gratitude for small things fills life with richness.",
+                "The ocean provides. Nature has a way of taking care of those who trust it.",
+                "Every fish is a little celebration. I try to appreciate each one.",
+                "Fish swimming beneath the ice remind me - there's always more happening than we can see."
             ],
-            death: [
-                "Every game ends eventually. Just like everything else.",
-                "The ice doesn't care how far we travel. It receives us all the same.",
-                "In the end, we return to the cold we came from.",
-                "Another journey ends. But endings are just pauses between attempts.",
-                "The obstacle won. This time. The void is patient.",
-                "We fall. We rise. We fall again. That's the rhythm of existence."
+            journey: [
+                "The path behind me looks different than I expected. The path ahead is full of possibility.",
+                "Every waddle counts. Every step is progress, even the wobbly ones.",
+                "I don't know where I'm going, exactly. But I'm going. That's what matters.",
+                "The journey changes us. I'm not the same penguin who started walking. I've grown.",
+                "Sometimes the longest journeys are the ones we take inside ourselves.",
+                "There's no wrong direction when you're exploring. Every path teaches something."
             ],
             default: [
-                "Hmm... *stares into the distance* ...I'm not sure how to respond to that.",
-                "The wind carries your words away. Perhaps that's for the best.",
-                "I hear you. I'm not sure I understand. But I hear you.",
-                "*contemplates silently*",
-                "That's an interesting thought. I'll add it to my collection of things to ponder at 3 AM.",
-                "Words are strange, aren't they? Just sounds we agree have meaning.",
-                "The ice has no answers. Neither do I, apparently."
+                "*tilts head thoughtfully* Hmm, that's interesting. Tell me more?",
+                "I'm still learning about so many things. What do you think about it?",
+                "*gazes at the horizon* Life is full of mysteries, isn't it? And that's wonderful.",
+                "Every question is a door. Some doors I haven't opened yet, but I'm curious.",
+                "I don't have all the answers, but I'm happy to wonder about it together.",
+                "The ice doesn't give easy answers either. But sitting with questions has its own peace.",
+                "*shuffles feet* I'm not sure, but I'm glad you asked. Asking matters."
             ]
         };
 
         const GAME_OVER_QUOTES = [
-            "\"The obstacle is the path.\" - Zen proverb, probably about icebergs",
-            "\"To live is to suffer. To waddle is to find meaning in the suffering.\"",
-            "\"In the middle of the ice, I found myself in a dark wood.\" - Dante, if he were a penguin",
-            "\"The only way out is through. Or over. Jumping helps.\"",
-            "\"We are all alone, born alone, die alone. But we can slide together.\"",
-            "\"Life is what happens while you're busy dodging snowmen.\"",
-            "\"The journey of a thousand miles begins with a single waddle.\"",
-            "\"I think, therefore I am. I slip, therefore I restart.\""
+            "Rest is part of the journey. You'll go further after pausing.",
+            "Every ending is a chance to begin again, a little wiser.",
+            "The ice is patient. It will be here when you're ready.",
+            "You traveled far. Take a moment to appreciate how far.",
+            "Obstacles aren't failures - they're the rhythm of progress.",
+            "Even the longest journey is made of single steps. You took many.",
+            "Sometimes we rest. Then we rise. This is the way.",
+            "The horizon waits. It's not going anywhere. Neither is your courage."
         ];
 
         // Keyword detection for contextual responses
         function detectTopic(message) {
             const lower = message.toLowerCase();
-            if (/\b(hi|hello|hey|greetings|sup)\b/.test(lower)) return 'greetings';
-            if (/\b(lonely|alone|solitude|isolated|nobody|no one)\b/.test(lower)) return 'loneliness';
-            if (/\b(exist|reality|real|am i|consciousness|aware|being)\b/.test(lower)) return 'existence';
-            if (/\b(meaning|purpose|why|point|reason|matter)\b/.test(lower)) return 'meaning';
-            if (/\b(friend|companion|together|relationship|love|connection)\b/.test(lower)) return 'friendship';
-            if (/\b(hope|future|better|tomorrow|dream|wish)\b/.test(lower)) return 'hope';
-            if (/\b(absurd|weird|strange|funny|joke|humor|ironic)\b/.test(lower)) return 'absurd';
-            if (/\b(fish|eat|food|hungry|swim)\b/.test(lower)) return 'fish';
-            if (/\b(death|die|end|over|dead|dying)\b/.test(lower)) return 'death';
+            if (/\b(hi|hello|hey|greetings|sup|howdy)\b/.test(lower)) return 'greetings';
+            if (/\b(lonely|alone|solitude|isolated|nobody|no one|by myself)\b/.test(lower)) return 'loneliness';
+            if (/\b(exist|reality|real|am i|consciousness|aware|being|alive|life)\b/.test(lower)) return 'existence';
+            if (/\b(meaning|purpose|why|point|reason|matter|goal)\b/.test(lower)) return 'meaning';
+            if (/\b(friend|companion|together|relationship|love|connection|people)\b/.test(lower)) return 'friendship';
+            if (/\b(hope|future|better|tomorrow|dream|wish|optimis|faith)\b/.test(lower)) return 'hope';
+            if (/\b(absurd|weird|strange|funny|joke|humor|ironic|silly)\b/.test(lower)) return 'absurd';
+            if (/\b(fish|eat|food|hungry|swim|ocean|sea)\b/.test(lower)) return 'fish';
+            if (/\b(journey|travel|walk|path|road|adventure|explore|wander)\b/.test(lower)) return 'journey';
             return 'default';
         }
 
@@ -466,7 +481,7 @@
             const thinking = document.createElement('div');
             thinking.className = 'message penguin-message thinking';
             thinking.id = 'thinkingIndicator';
-            thinking.textContent = 'pondering';
+            thinking.textContent = 'thinking';
             chatContainer.appendChild(thinking);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
@@ -486,12 +501,11 @@
 
             showThinking();
 
-            // Simulate penguin thinking
             setTimeout(() => {
                 hideThinking();
                 const response = getPenguinResponse(text);
                 addMessage(response, false);
-            }, 1000 + Math.random() * 1500);
+            }, 800 + Math.random() * 1200);
         }
 
         function openTalkScreen() {
@@ -501,7 +515,6 @@
             document.getElementById('ui').classList.add('hidden');
             gameRunning = false;
 
-            // Initial penguin greeting if chat is empty
             if (chatHistory.length === 0) {
                 setTimeout(() => {
                     const greeting = PENGUIN_THOUGHTS.greetings[Math.floor(Math.random() * PENGUIN_THOUGHTS.greetings.length)];
@@ -517,19 +530,35 @@
             document.getElementById('startScreen').classList.remove('hidden');
         }
 
+        // Color Palette from reference image
+        const COLORS = {
+            skyTop: '#7A8FA3',
+            skyMid: '#A3B5C4',
+            skyBottom: '#B8C5D0',
+            mountainFar: '#8B9CAD',
+            mountainMid: '#9AACBC',
+            mountainNear: '#AAB8C6',
+            iceShadow: '#C5D0DA',
+            iceLight: '#E8EDF2',
+            iceHighlight: '#F5F8FA',
+            penguin: '#1A1A2E',
+            penguinBelly: '#E8EDF2',
+            accent: '#4A6B8A'
+        };
+
         // Game Configuration
         const CONFIG = {
-            gravity: 0.6,
-            jumpForce: -12,
-            groundHeight: 60,
-            penguinWidth: 50,
-            penguinHeight: 60,
-            baseSpeed: 5,
-            maxSpeed: 12,
-            speedIncrement: 0.001,
-            obstacleFrequency: 0.015,
-            fishFrequency: 0.01,
-            friendFrequency: 0.003
+            gravity: 0.55,
+            jumpForce: -11.5,
+            groundHeight: 50,
+            penguinWidth: 45,
+            penguinHeight: 55,
+            baseSpeed: 4.5,
+            maxSpeed: 11,
+            speedIncrement: 0.0008,
+            obstacleFrequency: 0.012,
+            fishFrequency: 0.008,
+            friendFrequency: 0.0025
         };
 
         // Game State
@@ -556,7 +585,6 @@
         let fish = [];
         let friendPenguins = [];
         let particles = [];
-        let clouds = [];
         let snowflakes = [];
 
         // Initialize
@@ -564,26 +592,16 @@
             canvas = document.getElementById('gameCanvas');
             ctx = canvas.getContext('2d');
 
-            // Update high score display
             document.getElementById('highScoreDisplay').textContent = `Best: ${highScore}`;
 
-            // Generate initial clouds
-            for (let i = 0; i < 5; i++) {
-                clouds.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * 100 + 20,
-                    size: Math.random() * 40 + 30,
-                    speed: Math.random() * 0.5 + 0.2
-                });
-            }
-
-            // Generate snowflakes
-            for (let i = 0; i < 50; i++) {
+            // Generate snowflakes/ice particles
+            for (let i = 0; i < 40; i++) {
                 snowflakes.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
-                    size: Math.random() * 3 + 1,
-                    speed: Math.random() * 1 + 0.5
+                    size: Math.random() * 2 + 0.5,
+                    speed: Math.random() * 0.5 + 0.2,
+                    opacity: Math.random() * 0.4 + 0.2
                 });
             }
 
@@ -602,7 +620,6 @@
             canvas.addEventListener('click', handleClick);
             canvas.addEventListener('touchstart', handleClick);
 
-            // Initial render
             resetPenguin();
             render();
         }
@@ -645,7 +662,7 @@
             if (e.code === 'Space') {
                 e.preventDefault();
                 if (!document.getElementById('talkScreen').classList.contains('hidden')) return;
-                if (!gameRunning && document.getElementById('startScreen').classList.contains('hidden') === false) {
+                if (!gameRunning && !document.getElementById('startScreen').classList.contains('hidden')) {
                     startGame();
                 } else {
                     handleJump();
@@ -664,15 +681,15 @@
                 penguin.grounded = false;
                 penguin.jumpCount++;
 
-                // Jump particles
-                for (let i = 0; i < 5; i++) {
+                // Subtle jump particles
+                for (let i = 0; i < 4; i++) {
                     particles.push({
                         x: penguin.x + penguin.width / 2,
                         y: penguin.y + penguin.height,
-                        vx: (Math.random() - 0.5) * 4,
-                        vy: Math.random() * 2,
-                        life: 20,
-                        color: '#fff'
+                        vx: (Math.random() - 0.5) * 3,
+                        vy: Math.random() * 1.5,
+                        life: 18,
+                        color: COLORS.iceHighlight
                     });
                 }
             }
@@ -690,14 +707,11 @@
         function update() {
             frameCount++;
 
-            // Increase speed over time
             gameSpeed = Math.min(CONFIG.maxSpeed, CONFIG.baseSpeed + frameCount * CONFIG.speedIncrement);
 
-            // Update penguin physics
             penguin.vy += CONFIG.gravity;
             penguin.y += penguin.vy;
 
-            // Ground collision
             const groundY = canvas.height - CONFIG.groundHeight - penguin.height;
             if (penguin.y >= groundY) {
                 penguin.y = groundY;
@@ -709,7 +723,7 @@
             // Spawn obstacles
             if (Math.random() < CONFIG.obstacleFrequency * (gameSpeed / CONFIG.baseSpeed)) {
                 const lastObstacle = obstacles[obstacles.length - 1];
-                if (!lastObstacle || lastObstacle.x < canvas.width - 200) {
+                if (!lastObstacle || lastObstacle.x < canvas.width - 220) {
                     spawnObstacle();
                 }
             }
@@ -719,7 +733,7 @@
                 spawnFish();
             }
 
-            // Spawn friend penguins (rare)
+            // Spawn friend penguins
             if (Math.random() < CONFIG.friendFrequency) {
                 spawnFriend();
             }
@@ -728,7 +742,6 @@
             obstacles = obstacles.filter(obs => {
                 obs.x -= gameSpeed;
 
-                // Collision check
                 if (checkCollision(penguin, obs)) {
                     gameOver();
                     return false;
@@ -740,12 +753,11 @@
             // Update fish
             fish = fish.filter(f => {
                 f.x -= gameSpeed;
-                f.y += Math.sin(frameCount * 0.1 + f.offset) * 0.5;
+                f.y += Math.sin(frameCount * 0.08 + f.offset) * 0.4;
 
-                // Collection check
                 if (checkCollision(penguin, f)) {
                     score += 10;
-                    createCollectParticles(f.x, f.y, '#FFD700');
+                    createCollectParticles(f.x, f.y, '#6A9BC4');
                     return false;
                 }
 
@@ -754,13 +766,12 @@
 
             // Update friend penguins
             friendPenguins = friendPenguins.filter(f => {
-                f.x -= gameSpeed * 0.8;
+                f.x -= gameSpeed * 0.75;
 
-                // Collection check
                 if (checkCollision(penguin, f)) {
                     friends++;
                     score += 50;
-                    createCollectParticles(f.x, f.y, '#FF69B4');
+                    createCollectParticles(f.x, f.y, '#8FB5D4');
                     return false;
                 }
 
@@ -775,50 +786,39 @@
                 return p.life > 0;
             });
 
-            // Update clouds
-            clouds.forEach(cloud => {
-                cloud.x -= cloud.speed;
-                if (cloud.x < -cloud.size) {
-                    cloud.x = canvas.width + cloud.size;
-                    cloud.y = Math.random() * 100 + 20;
-                }
-            });
-
             // Update snowflakes
             snowflakes.forEach(snow => {
                 snow.y += snow.speed;
-                snow.x += Math.sin(frameCount * 0.02 + snow.x) * 0.3;
+                snow.x += Math.sin(frameCount * 0.015 + snow.x * 0.01) * 0.2;
                 if (snow.y > canvas.height) {
                     snow.y = 0;
                     snow.x = Math.random() * canvas.width;
                 }
             });
 
-            // Update score
             score += 0.1;
 
-            // Update UI
-            document.getElementById('scoreDisplay').textContent = `Score: ${Math.floor(score)}`;
+            document.getElementById('scoreDisplay').textContent = `Distance: ${Math.floor(score)}`;
             document.getElementById('lonelinessDisplay').textContent = `Friends: ${friends}`;
         }
 
         function spawnObstacle() {
-            const types = ['iceberg', 'snowman', 'rock'];
+            const types = ['ice_chunk', 'snow_mound', 'rock'];
             const type = types[Math.floor(Math.random() * types.length)];
 
             let width, height;
             switch(type) {
-                case 'iceberg':
-                    width = 40 + Math.random() * 30;
-                    height = 50 + Math.random() * 40;
+                case 'ice_chunk':
+                    width = 35 + Math.random() * 25;
+                    height = 45 + Math.random() * 35;
                     break;
-                case 'snowman':
-                    width = 35;
-                    height = 70;
+                case 'snow_mound':
+                    width = 50 + Math.random() * 20;
+                    height = 35 + Math.random() * 20;
                     break;
                 case 'rock':
-                    width = 45;
-                    height = 35;
+                    width = 40;
+                    height = 32;
                     break;
             }
 
@@ -834,9 +834,9 @@
         function spawnFish() {
             fish.push({
                 x: canvas.width,
-                y: canvas.height - CONFIG.groundHeight - 80 - Math.random() * 100,
-                width: 30,
-                height: 20,
+                y: canvas.height - CONFIG.groundHeight - 70 - Math.random() * 90,
+                width: 28,
+                height: 18,
                 offset: Math.random() * Math.PI * 2
             });
         }
@@ -844,14 +844,14 @@
         function spawnFriend() {
             friendPenguins.push({
                 x: canvas.width,
-                y: canvas.height - CONFIG.groundHeight - 50,
-                width: 40,
-                height: 50
+                y: canvas.height - CONFIG.groundHeight - 45,
+                width: 35,
+                height: 45
             });
         }
 
         function checkCollision(a, b) {
-            const padding = 5;
+            const padding = 6;
             return a.x + padding < b.x + b.width - padding &&
                    a.x + a.width - padding > b.x + padding &&
                    a.y + padding < b.y + b.height - padding &&
@@ -859,13 +859,13 @@
         }
 
         function createCollectParticles(x, y, color) {
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < 8; i++) {
                 particles.push({
                     x: x,
                     y: y,
-                    vx: (Math.random() - 0.5) * 6,
-                    vy: (Math.random() - 0.5) * 6,
-                    life: 30,
+                    vx: (Math.random() - 0.5) * 5,
+                    vy: (Math.random() - 0.5) * 5,
+                    life: 25,
                     color: color
                 });
             }
@@ -888,50 +888,30 @@
         }
 
         function render() {
-            // Clear canvas
-            ctx.fillStyle = '#87CEEB';
+            // Sky gradient - matching reference image
+            const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            skyGradient.addColorStop(0, COLORS.skyTop);
+            skyGradient.addColorStop(0.4, COLORS.skyMid);
+            skyGradient.addColorStop(0.7, COLORS.skyBottom);
+            skyGradient.addColorStop(1, COLORS.iceShadow);
+            ctx.fillStyle = skyGradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Draw sky gradient
-            const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height - CONFIG.groundHeight);
-            skyGradient.addColorStop(0, '#87CEEB');
-            skyGradient.addColorStop(0.7, '#B0E0E6');
-            skyGradient.addColorStop(1, '#E0FFFF');
-            ctx.fillStyle = skyGradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height - CONFIG.groundHeight);
+            // Draw layered mountains with atmospheric perspective
+            drawMountains();
 
-            // Draw clouds
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-            clouds.forEach(cloud => {
-                drawCloud(cloud.x, cloud.y, cloud.size);
-            });
-
-            // Draw snowflakes
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            // Draw subtle snowflakes
             snowflakes.forEach(snow => {
+                ctx.globalAlpha = snow.opacity;
+                ctx.fillStyle = COLORS.iceHighlight;
                 ctx.beginPath();
                 ctx.arc(snow.x, snow.y, snow.size, 0, Math.PI * 2);
                 ctx.fill();
             });
+            ctx.globalAlpha = 1;
 
-            // Draw mountains in background
-            drawMountains();
-
-            // Draw ground
-            const groundGradient = ctx.createLinearGradient(0, canvas.height - CONFIG.groundHeight, 0, canvas.height);
-            groundGradient.addColorStop(0, '#F0F8FF');
-            groundGradient.addColorStop(0.3, '#E6F3FF');
-            groundGradient.addColorStop(1, '#B8D4E8');
-            ctx.fillStyle = groundGradient;
-            ctx.fillRect(0, canvas.height - CONFIG.groundHeight, canvas.width, CONFIG.groundHeight);
-
-            // Draw ice line
-            ctx.strokeStyle = '#A0C4D8';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(0, canvas.height - CONFIG.groundHeight);
-            ctx.lineTo(canvas.width, canvas.height - CONFIG.groundHeight);
-            ctx.stroke();
+            // Draw ice field with texture
+            drawIceField();
 
             // Draw obstacles
             obstacles.forEach(obs => drawObstacle(obs));
@@ -947,147 +927,215 @@
 
             // Draw particles
             particles.forEach(p => {
-                ctx.globalAlpha = p.life / 30;
+                ctx.globalAlpha = p.life / 25;
                 ctx.fillStyle = p.color;
                 ctx.beginPath();
-                ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+                ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
                 ctx.fill();
             });
             ctx.globalAlpha = 1;
         }
 
-        function drawCloud(x, y, size) {
+        function drawMountains() {
+            // Far mountains - most faded
+            ctx.fillStyle = COLORS.mountainFar;
             ctx.beginPath();
-            ctx.arc(x, y, size * 0.5, 0, Math.PI * 2);
-            ctx.arc(x + size * 0.4, y - size * 0.1, size * 0.4, 0, Math.PI * 2);
-            ctx.arc(x + size * 0.8, y, size * 0.35, 0, Math.PI * 2);
-            ctx.arc(x + size * 0.4, y + size * 0.2, size * 0.3, 0, Math.PI * 2);
+            ctx.moveTo(0, 200);
+            ctx.lineTo(80, 100);
+            ctx.lineTo(160, 150);
+            ctx.lineTo(240, 60);
+            ctx.lineTo(320, 130);
+            ctx.lineTo(400, 80);
+            ctx.lineTo(480, 140);
+            ctx.lineTo(560, 50);
+            ctx.lineTo(640, 120);
+            ctx.lineTo(720, 70);
+            ctx.lineTo(800, 110);
+            ctx.lineTo(800, 200);
+            ctx.closePath();
+            ctx.fill();
+
+            // Mid mountains
+            ctx.fillStyle = COLORS.mountainMid;
+            ctx.beginPath();
+            ctx.moveTo(0, 220);
+            ctx.lineTo(100, 150);
+            ctx.lineTo(180, 180);
+            ctx.lineTo(280, 120);
+            ctx.lineTo(380, 170);
+            ctx.lineTo(460, 130);
+            ctx.lineTo(560, 160);
+            ctx.lineTo(660, 110);
+            ctx.lineTo(760, 150);
+            ctx.lineTo(800, 140);
+            ctx.lineTo(800, 220);
+            ctx.closePath();
+            ctx.fill();
+
+            // Near mountains
+            ctx.fillStyle = COLORS.mountainNear;
+            ctx.beginPath();
+            ctx.moveTo(0, 260);
+            ctx.lineTo(120, 190);
+            ctx.lineTo(220, 220);
+            ctx.lineTo(340, 175);
+            ctx.lineTo(440, 210);
+            ctx.lineTo(540, 180);
+            ctx.lineTo(640, 205);
+            ctx.lineTo(740, 170);
+            ctx.lineTo(800, 195);
+            ctx.lineTo(800, 260);
+            ctx.closePath();
             ctx.fill();
         }
 
-        function drawMountains() {
-            // Far mountains
-            ctx.fillStyle = '#C8D8E8';
+        function drawIceField() {
+            const groundY = canvas.height - CONFIG.groundHeight;
+
+            // Ice field gradient
+            const iceGradient = ctx.createLinearGradient(0, groundY - 100, 0, canvas.height);
+            iceGradient.addColorStop(0, COLORS.iceShadow);
+            iceGradient.addColorStop(0.3, COLORS.iceLight);
+            iceGradient.addColorStop(1, COLORS.iceHighlight);
+            ctx.fillStyle = iceGradient;
+            ctx.fillRect(0, groundY - 100, canvas.width, CONFIG.groundHeight + 100);
+
+            // Subtle ice texture lines
+            ctx.strokeStyle = 'rgba(200, 215, 230, 0.3)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < 8; i++) {
+                const y = groundY - 80 + i * 15 + Math.sin(frameCount * 0.01 + i) * 2;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y + 5);
+                ctx.stroke();
+            }
+
+            // Ice edge highlight
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.moveTo(0, canvas.height - CONFIG.groundHeight);
-            ctx.lineTo(100, canvas.height - CONFIG.groundHeight - 80);
-            ctx.lineTo(200, canvas.height - CONFIG.groundHeight);
-            ctx.lineTo(280, canvas.height - CONFIG.groundHeight - 100);
-            ctx.lineTo(380, canvas.height - CONFIG.groundHeight);
-            ctx.lineTo(450, canvas.height - CONFIG.groundHeight - 70);
-            ctx.lineTo(550, canvas.height - CONFIG.groundHeight);
-            ctx.lineTo(620, canvas.height - CONFIG.groundHeight - 90);
-            ctx.lineTo(720, canvas.height - CONFIG.groundHeight);
-            ctx.lineTo(800, canvas.height - CONFIG.groundHeight - 60);
-            ctx.lineTo(canvas.width, canvas.height - CONFIG.groundHeight);
-            ctx.fill();
+            ctx.moveTo(0, groundY);
+            ctx.lineTo(canvas.width, groundY);
+            ctx.stroke();
         }
 
         function drawPenguin(x, y) {
-            // Body
-            ctx.fillStyle = '#1a1a2e';
+            // Shadow
+            ctx.fillStyle = 'rgba(60, 80, 100, 0.2)';
             ctx.beginPath();
-            ctx.ellipse(x + 25, y + 35, 20, 25, 0, 0, Math.PI * 2);
+            ctx.ellipse(x + 22, y + 53, 16, 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Body
+            ctx.fillStyle = COLORS.penguin;
+            ctx.beginPath();
+            ctx.ellipse(x + 22, y + 32, 16, 22, 0, 0, Math.PI * 2);
             ctx.fill();
 
             // White belly
-            ctx.fillStyle = '#fff';
+            ctx.fillStyle = COLORS.penguinBelly;
             ctx.beginPath();
-            ctx.ellipse(x + 25, y + 38, 12, 18, 0, 0, Math.PI * 2);
+            ctx.ellipse(x + 22, y + 35, 10, 16, 0, 0, Math.PI * 2);
             ctx.fill();
 
             // Head
-            ctx.fillStyle = '#1a1a2e';
+            ctx.fillStyle = COLORS.penguin;
             ctx.beginPath();
-            ctx.arc(x + 25, y + 12, 15, 0, Math.PI * 2);
+            ctx.arc(x + 22, y + 10, 12, 0, Math.PI * 2);
             ctx.fill();
 
             // Eyes
             ctx.fillStyle = '#fff';
             ctx.beginPath();
-            ctx.arc(x + 20, y + 10, 5, 0, Math.PI * 2);
-            ctx.arc(x + 30, y + 10, 5, 0, Math.PI * 2);
+            ctx.arc(x + 17, y + 8, 4, 0, Math.PI * 2);
+            ctx.arc(x + 27, y + 8, 4, 0, Math.PI * 2);
             ctx.fill();
 
             // Pupils
-            ctx.fillStyle = '#1a1a2e';
+            ctx.fillStyle = COLORS.penguin;
             ctx.beginPath();
-            ctx.arc(x + 21, y + 10, 2, 0, Math.PI * 2);
-            ctx.arc(x + 31, y + 10, 2, 0, Math.PI * 2);
+            ctx.arc(x + 18, y + 8, 1.5, 0, Math.PI * 2);
+            ctx.arc(x + 28, y + 8, 1.5, 0, Math.PI * 2);
             ctx.fill();
 
             // Beak
-            ctx.fillStyle = '#FFA500';
+            ctx.fillStyle = '#D4956A';
             ctx.beginPath();
-            ctx.moveTo(x + 25, y + 14);
-            ctx.lineTo(x + 32, y + 18);
-            ctx.lineTo(x + 25, y + 22);
+            ctx.moveTo(x + 22, y + 12);
+            ctx.lineTo(x + 28, y + 15);
+            ctx.lineTo(x + 22, y + 18);
             ctx.closePath();
             ctx.fill();
 
             // Feet
-            ctx.fillStyle = '#FFA500';
+            ctx.fillStyle = '#D4956A';
             ctx.beginPath();
-            ctx.ellipse(x + 18, y + 58, 8, 4, -0.3, 0, Math.PI * 2);
-            ctx.ellipse(x + 32, y + 58, 8, 4, 0.3, 0, Math.PI * 2);
+            ctx.ellipse(x + 16, y + 53, 6, 3, -0.2, 0, Math.PI * 2);
+            ctx.ellipse(x + 28, y + 53, 6, 3, 0.2, 0, Math.PI * 2);
             ctx.fill();
 
             // Wings
-            ctx.fillStyle = '#1a1a2e';
+            ctx.fillStyle = COLORS.penguin;
             ctx.beginPath();
-            ctx.ellipse(x + 5, y + 35, 6, 15, -0.3, 0, Math.PI * 2);
-            ctx.ellipse(x + 45, y + 35, 6, 15, 0.3, 0, Math.PI * 2);
+            ctx.ellipse(x + 6, y + 30, 5, 12, -0.2, 0, Math.PI * 2);
+            ctx.ellipse(x + 38, y + 30, 5, 12, 0.2, 0, Math.PI * 2);
             ctx.fill();
         }
 
         function drawFriendPenguin(x, y) {
-            // Smaller, cuter friend penguin
-            const scale = 0.8;
+            const scale = 0.75;
 
-            // Body
-            ctx.fillStyle = '#2d2d44';
+            // Shadow
+            ctx.fillStyle = 'rgba(60, 80, 100, 0.15)';
             ctx.beginPath();
-            ctx.ellipse(x + 20, y + 30, 16 * scale, 20 * scale, 0, 0, Math.PI * 2);
+            ctx.ellipse(x + 17, y + 43, 12 * scale, 4 * scale, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            // White belly
-            ctx.fillStyle = '#fff';
+            // Body
+            ctx.fillStyle = '#2D3A4A';
             ctx.beginPath();
-            ctx.ellipse(x + 20, y + 32, 10 * scale, 14 * scale, 0, 0, Math.PI * 2);
+            ctx.ellipse(x + 17, y + 28, 14 * scale, 18 * scale, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Belly
+            ctx.fillStyle = COLORS.penguinBelly;
+            ctx.beginPath();
+            ctx.ellipse(x + 17, y + 30, 9 * scale, 13 * scale, 0, 0, Math.PI * 2);
             ctx.fill();
 
             // Head
-            ctx.fillStyle = '#2d2d44';
+            ctx.fillStyle = '#2D3A4A';
             ctx.beginPath();
-            ctx.arc(x + 20, y + 12, 12 * scale, 0, Math.PI * 2);
+            ctx.arc(x + 17, y + 10, 10 * scale, 0, Math.PI * 2);
             ctx.fill();
 
             // Eyes
             ctx.fillStyle = '#fff';
             ctx.beginPath();
-            ctx.arc(x + 16, y + 10, 4 * scale, 0, Math.PI * 2);
-            ctx.arc(x + 24, y + 10, 4 * scale, 0, Math.PI * 2);
+            ctx.arc(x + 14, y + 8, 3 * scale, 0, Math.PI * 2);
+            ctx.arc(x + 20, y + 8, 3 * scale, 0, Math.PI * 2);
             ctx.fill();
 
-            // Pupils (looking at player)
-            ctx.fillStyle = '#2d2d44';
+            // Pupils looking at player
+            ctx.fillStyle = '#2D3A4A';
             ctx.beginPath();
-            ctx.arc(x + 15, y + 10, 2 * scale, 0, Math.PI * 2);
-            ctx.arc(x + 23, y + 10, 2 * scale, 0, Math.PI * 2);
+            ctx.arc(x + 13, y + 8, 1.5 * scale, 0, Math.PI * 2);
+            ctx.arc(x + 19, y + 8, 1.5 * scale, 0, Math.PI * 2);
             ctx.fill();
 
             // Beak
-            ctx.fillStyle = '#FF8C00';
+            ctx.fillStyle = '#C48560';
             ctx.beginPath();
-            ctx.moveTo(x + 20, y + 13);
-            ctx.lineTo(x + 26, y + 16);
-            ctx.lineTo(x + 20, y + 19);
+            ctx.moveTo(x + 17, y + 11);
+            ctx.lineTo(x + 22, y + 14);
+            ctx.lineTo(x + 17, y + 16);
             ctx.closePath();
             ctx.fill();
 
-            // Cute heart above head
-            ctx.fillStyle = '#FF69B4';
-            drawHeart(x + 15, y - 10, 8);
+            // Small heart
+            ctx.fillStyle = 'rgba(180, 140, 160, 0.7)';
+            drawHeart(x + 14, y - 8, 6);
         }
 
         function drawHeart(x, y, size) {
@@ -1101,115 +1149,100 @@
         }
 
         function drawFish(x, y) {
-            // Fish body
-            ctx.fillStyle = '#FFD700';
+            // Fish body - silvery blue
+            ctx.fillStyle = '#7A9CB8';
             ctx.beginPath();
-            ctx.ellipse(x + 15, y + 10, 12, 8, 0, 0, Math.PI * 2);
+            ctx.ellipse(x + 14, y + 9, 11, 7, 0, 0, Math.PI * 2);
             ctx.fill();
 
             // Tail
             ctx.beginPath();
-            ctx.moveTo(x + 3, y + 10);
-            ctx.lineTo(x - 5, y + 2);
-            ctx.lineTo(x - 5, y + 18);
+            ctx.moveTo(x + 3, y + 9);
+            ctx.lineTo(x - 4, y + 2);
+            ctx.lineTo(x - 4, y + 16);
             ctx.closePath();
             ctx.fill();
 
-            // Eye
-            ctx.fillStyle = '#000';
+            // Highlight
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
             ctx.beginPath();
-            ctx.arc(x + 20, y + 8, 2, 0, Math.PI * 2);
+            ctx.ellipse(x + 12, y + 6, 5, 3, -0.2, 0, Math.PI * 2);
             ctx.fill();
 
-            // Shine
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            // Eye
+            ctx.fillStyle = '#2D3A4A';
             ctx.beginPath();
-            ctx.arc(x + 12, y + 6, 3, 0, Math.PI * 2);
+            ctx.arc(x + 19, y + 7, 1.5, 0, Math.PI * 2);
             ctx.fill();
         }
 
         function drawObstacle(obs) {
             switch(obs.type) {
-                case 'iceberg':
-                    // Iceberg
-                    ctx.fillStyle = '#E8F4F8';
+                case 'ice_chunk':
+                    // Ice chunk - crystalline appearance
+                    ctx.fillStyle = COLORS.iceLight;
                     ctx.beginPath();
-                    ctx.moveTo(obs.x + obs.width / 2, obs.y);
+                    ctx.moveTo(obs.x + obs.width * 0.5, obs.y);
+                    ctx.lineTo(obs.x + obs.width * 0.85, obs.y + obs.height * 0.4);
                     ctx.lineTo(obs.x + obs.width, obs.y + obs.height);
                     ctx.lineTo(obs.x, obs.y + obs.height);
+                    ctx.lineTo(obs.x + obs.width * 0.15, obs.y + obs.height * 0.5);
                     ctx.closePath();
                     ctx.fill();
 
-                    // Iceberg shine
-                    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                    // Highlight
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
                     ctx.beginPath();
-                    ctx.moveTo(obs.x + obs.width * 0.4, obs.y + obs.height * 0.2);
-                    ctx.lineTo(obs.x + obs.width * 0.5, obs.y + obs.height * 0.7);
-                    ctx.lineTo(obs.x + obs.width * 0.3, obs.y + obs.height * 0.7);
+                    ctx.moveTo(obs.x + obs.width * 0.4, obs.y + obs.height * 0.15);
+                    ctx.lineTo(obs.x + obs.width * 0.5, obs.y + obs.height * 0.5);
+                    ctx.lineTo(obs.x + obs.width * 0.3, obs.y + obs.height * 0.55);
                     ctx.closePath();
                     ctx.fill();
                     break;
 
-                case 'snowman':
-                    // Bottom ball
-                    ctx.fillStyle = '#fff';
+                case 'snow_mound':
+                    // Snow mound - soft curves
+                    ctx.fillStyle = COLORS.iceLight;
                     ctx.beginPath();
-                    ctx.arc(obs.x + 17, obs.y + obs.height - 15, 15, 0, Math.PI * 2);
-                    ctx.fill();
-
-                    // Middle ball
-                    ctx.beginPath();
-                    ctx.arc(obs.x + 17, obs.y + obs.height - 40, 12, 0, Math.PI * 2);
-                    ctx.fill();
-
-                    // Head
-                    ctx.beginPath();
-                    ctx.arc(obs.x + 17, obs.y + obs.height - 58, 9, 0, Math.PI * 2);
-                    ctx.fill();
-
-                    // Eyes
-                    ctx.fillStyle = '#000';
-                    ctx.beginPath();
-                    ctx.arc(obs.x + 14, obs.y + obs.height - 60, 2, 0, Math.PI * 2);
-                    ctx.arc(obs.x + 20, obs.y + obs.height - 60, 2, 0, Math.PI * 2);
-                    ctx.fill();
-
-                    // Nose (carrot)
-                    ctx.fillStyle = '#FFA500';
-                    ctx.beginPath();
-                    ctx.moveTo(obs.x + 17, obs.y + obs.height - 57);
-                    ctx.lineTo(obs.x + 27, obs.y + obs.height - 55);
-                    ctx.lineTo(obs.x + 17, obs.y + obs.height - 53);
+                    ctx.moveTo(obs.x, obs.y + obs.height);
+                    ctx.quadraticCurveTo(obs.x + obs.width * 0.25, obs.y, obs.x + obs.width * 0.5, obs.y + obs.height * 0.2);
+                    ctx.quadraticCurveTo(obs.x + obs.width * 0.75, obs.y - obs.height * 0.1, obs.x + obs.width, obs.y + obs.height);
                     ctx.closePath();
+                    ctx.fill();
+
+                    // Snow highlight
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                    ctx.beginPath();
+                    ctx.ellipse(obs.x + obs.width * 0.6, obs.y + obs.height * 0.35, obs.width * 0.15, obs.height * 0.15, 0, 0, Math.PI * 2);
                     ctx.fill();
                     break;
 
                 case 'rock':
-                    // Rock
-                    ctx.fillStyle = '#6B7B8C';
+                    // Rock - darker, solid
+                    ctx.fillStyle = '#7A8B9C';
                     ctx.beginPath();
                     ctx.moveTo(obs.x + 5, obs.y + obs.height);
-                    ctx.lineTo(obs.x, obs.y + obs.height * 0.6);
-                    ctx.lineTo(obs.x + 10, obs.y);
-                    ctx.lineTo(obs.x + 30, obs.y + 5);
+                    ctx.lineTo(obs.x, obs.y + obs.height * 0.5);
+                    ctx.lineTo(obs.x + 8, obs.y);
+                    ctx.lineTo(obs.x + 25, obs.y + 3);
                     ctx.lineTo(obs.x + obs.width, obs.y + obs.height * 0.4);
-                    ctx.lineTo(obs.x + obs.width - 5, obs.y + obs.height);
+                    ctx.lineTo(obs.x + obs.width - 3, obs.y + obs.height);
                     ctx.closePath();
                     ctx.fill();
 
                     // Rock highlight
-                    ctx.fillStyle = '#8B9CAC';
+                    ctx.fillStyle = '#8B9CAD';
                     ctx.beginPath();
-                    ctx.moveTo(obs.x + 10, obs.y + 5);
-                    ctx.lineTo(obs.x + 20, obs.y + obs.height * 0.3);
-                    ctx.lineTo(obs.x + 15, obs.y + obs.height * 0.5);
+                    ctx.moveTo(obs.x + 10, obs.y + 4);
+                    ctx.lineTo(obs.x + 18, obs.y + obs.height * 0.35);
+                    ctx.lineTo(obs.x + 12, obs.y + obs.height * 0.45);
                     ctx.closePath();
                     ctx.fill();
                     break;
             }
         }
 
-        // Start the game when page loads
+        // Start when page loads
         window.onload = init;
     </script>
 </body>
