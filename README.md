@@ -1,12 +1,20 @@
 # Lonely Penguin
 
-*75 kilometers to the mountains. Keep hope alive.*
+*The mountains call. The journey transforms. The wisdom returns home.*
 
-A philosophical browser game where you guide a lonely penguin across the vast Antarctic ice, balancing hope and energy to reach the distant mountains.
+A philosophical browser game where you guide a lonely penguin across the vast Antarctic ice. This is a journey of self-discovery—balancing hope and energy to reach the distant mountains and find what you're truly searching for.
+
+## The Story
+
+*"I don't know why. I just know I need to reach them."*
+
+You are a penguin who hears a call from the distant mountains. Something pulls you forward, away from the colony, across 75 kilometers of ice and wind. Is it curiosity? Restlessness? A need to understand yourself?
+
+The journey isn't just about reaching the mountains—**it's about becoming who you need to be to arrive.**
 
 ## The Goal
 
-Travel **75 kilometers** to reach the mountains on the horizon. But this isn't just about jumping over obstacles - it's about maintaining the penguin's spirit through encouragement and finding sustenance along the way.
+Travel **75 kilometers** to reach the mountains on the horizon. Along the way, maintain the penguin's spirit through encouragement and find sustenance in the ice. Every step is a lesson. Every obstacle, a teacher.
 
 ## Game Mechanics
 
@@ -68,7 +76,19 @@ Press ENTER during gameplay to send a message. The penguin responds to encouragi
 
 ## Win Condition
 
-Reach 75 kilometers to complete the journey. The mountains grow visibly closer as you progress!
+Reach 75 kilometers to complete the journey. The mountains grow visibly closer as you progress.
+
+### What Awaits at the Mountains
+
+When you finally reach the mountains, you discover what you were truly searching for: **yourself.**
+
+The journey teaches you:
+- **Patience** — from the endless ice
+- **Persistence** — from the wind that never stopped
+- **Connection** — from the friends who appeared when needed most
+- **The truth** — that only by finding yourself can you truly have something to give
+
+*Now, wiser, you turn back toward the colony. They need to hear what the mountains whispered to you.*
 
 ## Technical Details
 
@@ -85,9 +105,11 @@ This game explores:
 - How encouragement from others sustains us
 - The connection between mental and physical energy
 - Finding meaning in reaching toward distant goals
+- **Self-discovery** — sometimes we must leave home to find ourselves
+- **Giving back** — only by understanding who we are can we truly contribute to our community
 
-*"The mountains wait. Hope carries you there."*
+*"Only by finding myself could I truly have something to give."*
 
 ## License
 
-MIT - Keep hope alive, share the journey.
+MIT - Find yourself. Share the wisdom. Keep hope alive.
