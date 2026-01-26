@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lonely Penguin - A journey of reflection</title>
+    <title>Lonely Penguin - Journey to the Mountains</title>
     <style>
         * {
             margin: 0;
@@ -17,15 +17,16 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
+            padding-top: 15px;
             font-family: 'Georgia', 'Times New Roman', serif;
             color: #2C3E50;
             overflow-x: hidden;
         }
 
         h1 {
-            font-size: 2.5rem;
-            margin-bottom: 8px;
+            font-size: 2rem;
+            margin-bottom: 5px;
             text-shadow: 1px 1px 3px rgba(255,255,255,0.5);
             color: #3D5A73;
             font-weight: normal;
@@ -33,11 +34,17 @@
         }
 
         .subtitle {
-            font-size: 1rem;
-            margin-bottom: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
             opacity: 0.8;
             font-style: italic;
             color: #5A7A94;
+        }
+
+        #mainContainer {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
         }
 
         #gameContainer {
@@ -51,28 +58,184 @@
             display: block;
         }
 
-        #ui {
+        /* Stats Panel */
+        #statsPanel {
+            width: 200px;
+            background: rgba(255,255,255,0.25);
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .stat-group {
+            background: rgba(255,255,255,0.3);
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #5A7A94;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.4rem;
+            color: #3D5A73;
+            font-weight: bold;
+        }
+
+        .stat-value small {
+            font-size: 0.8rem;
+            font-weight: normal;
+            opacity: 0.7;
+        }
+
+        /* Gauges */
+        .gauge-container {
+            margin-top: 5px;
+        }
+
+        .gauge-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: #5A7A94;
+            margin-bottom: 3px;
+        }
+
+        .gauge-bar {
+            height: 12px;
+            background: rgba(0,0,0,0.15);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .gauge-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.3s ease;
+        }
+
+        .gauge-hope .gauge-fill {
+            background: linear-gradient(90deg, #E57373, #FFB74D, #81C784);
+        }
+
+        .gauge-energy .gauge-fill {
+            background: linear-gradient(90deg, #7986CB, #64B5F6, #4DD0E1);
+        }
+
+        .gauge-speed .gauge-fill {
+            background: linear-gradient(90deg, #90A4AE, #78909C, #546E7A);
+        }
+
+        /* In-game chat */
+        #gameChatContainer {
             position: absolute;
-            top: 10px;
+            bottom: 10px;
             left: 10px;
             right: 10px;
             display: flex;
-            justify-content: space-between;
-            font-size: 1rem;
-            font-family: 'Segoe UI', sans-serif;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.3s;
             pointer-events: none;
         }
 
-        #ui div {
-            background: rgba(255,255,255,0.25);
-            backdrop-filter: blur(4px);
-            padding: 8px 16px;
-            border-radius: 20px;
-            color: #3D5A73;
-            text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+        #gameChatContainer.active {
+            opacity: 1;
+            pointer-events: all;
         }
 
-        #startScreen, #gameOverScreen, #talkScreen {
+        #gameChat {
+            flex: 1;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.85);
+            color: #3D5A73;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        #gameChatSend {
+            padding: 8px 18px;
+            background: linear-gradient(135deg, #5A7A94, #4A6B8A);
+            border: none;
+            border-radius: 20px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        /* Speech bubble */
+        #speechBubble {
+            position: absolute;
+            left: 160px;
+            bottom: 120px;
+            max-width: 250px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 15px;
+            border-radius: 15px;
+            border-bottom-left-radius: 5px;
+            font-size: 0.85rem;
+            color: #3D5A73;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none;
+            line-height: 1.4;
+        }
+
+        #speechBubble.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* UI Overlay */
+        #distanceOverlay {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255,255,255,0.3);
+            backdrop-filter: blur(4px);
+            padding: 8px 20px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        #distanceOverlay .distance {
+            font-size: 1.3rem;
+            color: #3D5A73;
+            font-weight: bold;
+        }
+
+        #distanceOverlay .goal {
+            font-size: 0.7rem;
+            color: #5A7A94;
+        }
+
+        /* Chat hint */
+        #chatHint {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            color: rgba(61, 90, 115, 0.6);
+            background: rgba(255,255,255,0.5);
+            padding: 4px 12px;
+            border-radius: 10px;
+        }
+
+        /* Screens */
+        #startScreen, #gameOverScreen, #leaderboardScreen {
             position: absolute;
             top: 0;
             left: 0;
@@ -82,34 +245,21 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: rgba(180, 195, 210, 0.85);
+            background: rgba(180, 195, 210, 0.92);
             backdrop-filter: blur(8px);
             border-radius: 8px;
         }
 
-        #startScreen h2, #gameOverScreen h2, #talkScreen h2 {
-            font-size: 2rem;
+        #startScreen h2, #gameOverScreen h2, #leaderboardScreen h2 {
+            font-size: 1.8rem;
             margin-bottom: 15px;
             color: #3D5A73;
             font-weight: normal;
-            letter-spacing: 1px;
-        }
-
-        #gameOverScreen .finalScore {
-            font-size: 1.4rem;
-            margin-bottom: 8px;
-            color: #4A6B8A;
-        }
-
-        #gameOverScreen .highScore {
-            font-size: 1.1rem;
-            margin-bottom: 15px;
-            color: #6A8CAA;
         }
 
         .btn {
-            padding: 14px 36px;
-            font-size: 1.1rem;
+            padding: 12px 30px;
+            font-size: 1rem;
             font-family: 'Georgia', serif;
             background: linear-gradient(135deg, #5A7A94, #4A6B8A);
             border: none;
@@ -117,8 +267,7 @@
             color: #fff;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
-            margin: 8px;
-            letter-spacing: 1px;
+            margin: 6px;
         }
 
         .btn:hover {
@@ -126,411 +275,414 @@
             box-shadow: 0 4px 16px rgba(74, 107, 138, 0.4);
         }
 
-        .btn-talk {
-            background: linear-gradient(135deg, #7A8FA3, #6A8099);
-        }
-
-        .btn-back {
+        .btn-secondary {
             background: linear-gradient(135deg, #8B9CAD, #7A8B9C);
-            padding: 10px 24px;
-            font-size: 0.95rem;
         }
 
         .instructions {
-            margin-top: 15px;
             text-align: center;
-            opacity: 0.9;
-            line-height: 1.7;
             color: #4A6B8A;
-            max-width: 400px;
-        }
-
-        .controls {
-            margin-top: 12px;
+            line-height: 1.6;
+            margin: 10px 0;
+            max-width: 350px;
             font-size: 0.95rem;
-            opacity: 0.7;
-            font-family: 'Segoe UI', sans-serif;
-        }
-
-        footer {
-            margin-top: 20px;
-            font-size: 0.9rem;
-            opacity: 0.6;
-            color: #5A7A94;
-            font-style: italic;
         }
 
         .hidden {
             display: none !important;
         }
 
-        /* Talk/Chat Interface */
-        #talkScreen {
-            padding: 20px;
-            justify-content: flex-start;
-            padding-top: 35px;
+        /* Game Over specific */
+        #gameOverScreen .result {
+            font-size: 1.2rem;
+            color: #4A6B8A;
+            margin: 8px 0;
         }
 
-        #chatContainer {
-            width: 92%;
-            max-width: 720px;
-            height: 230px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 12px;
-            padding: 15px;
-            overflow-y: auto;
-            margin-bottom: 15px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .message {
-            margin: 6px 0;
-            padding: 10px 16px;
-            border-radius: 16px;
-            max-width: 82%;
-            animation: fadeIn 0.3s ease;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .penguin-message {
-            background: rgba(255,255,255,0.6);
-            align-self: flex-start;
-            border-bottom-left-radius: 4px;
+        #gameOverScreen .result-value {
+            font-weight: bold;
             color: #3D5A73;
         }
 
-        .penguin-message::before {
-            content: "~ ";
-            opacity: 0.5;
-        }
-
-        .user-message {
-            background: linear-gradient(135deg, #5A7A94, #4A6B8A);
-            align-self: flex-end;
-            border-bottom-right-radius: 4px;
-            color: #fff;
-        }
-
-        #chatInput {
-            width: 92%;
-            max-width: 720px;
+        #nameEntry {
+            margin: 15px 0;
             display: flex;
             gap: 10px;
+            align-items: center;
         }
 
-        #userInput {
-            flex: 1;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 25px;
-            background: rgba(255,255,255,0.5);
+        #playerName {
+            padding: 10px 15px;
+            border: 2px solid rgba(90, 122, 148, 0.3);
+            border-radius: 20px;
+            background: rgba(255,255,255,0.7);
             color: #3D5A73;
             font-size: 1rem;
-            font-family: 'Georgia', serif;
+            width: 150px;
             outline: none;
         }
 
-        #userInput::placeholder {
-            color: rgba(61, 90, 115, 0.5);
+        #playerName:focus {
+            border-color: rgba(90, 122, 148, 0.6);
         }
 
-        #userInput:focus {
-            background: rgba(255,255,255,0.7);
+        /* Leaderboard */
+        #leaderboardScreen {
+            overflow-y: auto;
         }
 
-        #sendBtn {
-            padding: 12px 24px;
-            background: linear-gradient(135deg, #5A7A94, #4A6B8A);
-            border: none;
-            border-radius: 25px;
-            color: #fff;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-family: 'Georgia', serif;
-            transition: transform 0.2s;
+        #leaderboardTable {
+            width: 90%;
+            max-width: 400px;
+            max-height: 280px;
+            overflow-y: auto;
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+            margin: 10px 0;
         }
 
-        #sendBtn:hover {
-            transform: scale(1.03);
+        .leaderboard-row {
+            display: flex;
+            padding: 8px 15px;
+            border-bottom: 1px solid rgba(90, 122, 148, 0.1);
+            font-size: 0.9rem;
         }
 
-        .thinking {
-            opacity: 0.6;
-            font-style: italic;
+        .leaderboard-row:last-child {
+            border-bottom: none;
         }
 
-        .thinking::after {
-            content: '...';
-            animation: dots 1.5s infinite;
+        .leaderboard-row.header {
+            background: rgba(90, 122, 148, 0.2);
+            font-weight: bold;
+            color: #3D5A73;
+            position: sticky;
+            top: 0;
         }
 
-        @keyframes dots {
-            0%, 20% { content: '.'; }
-            40% { content: '..'; }
-            60%, 100% { content: '...'; }
-        }
-
-        .philosophical-quote {
-            font-style: italic;
-            opacity: 0.85;
-            margin-top: 12px;
-            font-size: 0.95rem;
-            text-align: center;
-            max-width: 480px;
+        .leaderboard-row .rank {
+            width: 40px;
             color: #5A7A94;
-            line-height: 1.5;
         }
 
-        @media (max-width: 850px) {
-            h1 { font-size: 1.9rem; }
-            #gameCanvas { max-width: 100vw; }
-            #chatContainer { height: 190px; }
+        .leaderboard-row .name {
+            flex: 1;
+            color: #3D5A73;
+        }
+
+        .leaderboard-row .distance {
+            width: 80px;
+            text-align: right;
+            color: #4A6B8A;
+        }
+
+        .leaderboard-row.highlight {
+            background: rgba(129, 199, 132, 0.2);
+        }
+
+        /* Sleeping penguin message */
+        #sleepMessage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255,255,255,0.9);
+            padding: 20px 30px;
+            border-radius: 15px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+        }
+
+        #sleepMessage.visible {
+            opacity: 1;
+        }
+
+        #sleepMessage h3 {
+            color: #3D5A73;
+            margin-bottom: 10px;
+        }
+
+        #sleepMessage p {
+            color: #5A7A94;
+            font-size: 0.9rem;
+        }
+
+        footer {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            opacity: 0.6;
+            color: #5A7A94;
+            font-style: italic;
+        }
+
+        @media (max-width: 900px) {
+            #mainContainer {
+                flex-direction: column;
+                align-items: center;
+            }
+            #statsPanel {
+                width: 100%;
+                max-width: 500px;
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            .stat-group {
+                flex: 1;
+                min-width: 140px;
+            }
         }
     </style>
 </head>
 <body>
     <h1>Lonely Penguin</h1>
-    <p class="subtitle">Every journey begins with a single step across the ice.</p>
+    <p class="subtitle">75 kilometers to the mountains. Keep hope alive.</p>
 
-    <div id="gameContainer">
-        <canvas id="gameCanvas" width="800" height="400"></canvas>
+    <div id="mainContainer">
+        <div id="gameContainer">
+            <canvas id="gameCanvas" width="600" height="350"></canvas>
 
-        <div id="ui" class="hidden">
-            <div id="scoreDisplay">Distance: 0</div>
-            <div id="lonelinessDisplay">Friends: 0</div>
-            <div id="highScoreDisplay">Best: 0</div>
+            <div id="distanceOverlay" class="hidden">
+                <div class="distance"><span id="distanceDisplay">0.00</span> km</div>
+                <div class="goal">Goal: 75 km to the mountains</div>
+            </div>
+
+            <div id="speechBubble"></div>
+
+            <div id="chatHint" class="hidden">Press ENTER to encourage the penguin</div>
+
+            <div id="gameChatContainer">
+                <input type="text" id="gameChat" placeholder="Say something encouraging..." maxlength="100">
+                <button id="gameChatSend">Send</button>
+            </div>
+
+            <div id="sleepMessage">
+                <h3>The penguin needs rest...</h3>
+                <p>Without hope, the journey becomes too heavy.</p>
+            </div>
+
+            <div id="startScreen">
+                <h2>Lonely Penguin</h2>
+                <p class="instructions">
+                    Guide the penguin 75 km to reach the distant mountains.<br><br>
+                    <b>Collect fish</b> to maintain energy.<br>
+                    <b>Send encouragement</b> to keep hope alive.<br><br>
+                    If hope fades, energy will drain...<br>
+                    and the penguin will need to rest.
+                </p>
+                <div style="margin-top: 15px;">
+                    <button class="btn" id="startBtn">Begin Journey</button>
+                    <button class="btn btn-secondary" id="viewLeaderboardBtn">Leaderboard</button>
+                </div>
+                <p style="margin-top: 15px; font-size: 0.8rem; color: #5A7A94;">
+                    SPACE to jump | ENTER to chat
+                </p>
+            </div>
+
+            <div id="gameOverScreen" class="hidden">
+                <h2 id="gameOverTitle">Journey Paused</h2>
+                <p class="result">Distance: <span class="result-value" id="finalDistance">0.00</span> km</p>
+                <p class="result">Friends met: <span class="result-value" id="finalFriends">0</span></p>
+                <p class="result" id="reachedGoalMsg" class="hidden" style="color: #81C784;"></p>
+
+                <div id="nameEntry">
+                    <input type="text" id="playerName" placeholder="Your name" maxlength="15">
+                    <button class="btn" id="saveScoreBtn">Save Score</button>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn" id="restartBtn">Try Again</button>
+                    <button class="btn btn-secondary" id="leaderboardBtn">Leaderboard</button>
+                </div>
+            </div>
+
+            <div id="leaderboardScreen" class="hidden">
+                <h2>Leaderboard</h2>
+                <p style="color: #5A7A94; font-size: 0.85rem; margin-bottom: 5px;">Top 20 Journeys</p>
+                <div id="leaderboardTable"></div>
+                <p style="color: #5A7A94; font-size: 0.8rem; margin: 5px 0;">
+                    Total journeys recorded: <span id="totalJourneys">0</span>
+                </p>
+                <button class="btn" id="backFromLeaderboard">Back</button>
+            </div>
         </div>
 
-        <div id="startScreen">
-            <h2>Lonely Penguin</h2>
-            <p class="instructions">
-                A small penguin stands before an endless horizon.<br>
-                The journey ahead is yours to take.
-            </p>
-            <div style="display: flex; flex-direction: column; align-items: center; margin-top: 18px;">
-                <button class="btn" id="startBtn">Begin Journey</button>
-                <button class="btn btn-talk" id="talkBtn">Sit & Reflect</button>
+        <div id="statsPanel">
+            <div class="stat-group">
+                <div class="stat-label">Distance</div>
+                <div class="stat-value"><span id="statDistance">0.00</span> <small>km</small></div>
+                <div class="gauge-container">
+                    <div class="gauge-label">
+                        <span>Start</span>
+                        <span>75 km</span>
+                    </div>
+                    <div class="gauge-bar">
+                        <div class="gauge-fill" id="distanceGauge" style="width: 0%; background: linear-gradient(90deg, #81C784, #4CAF50);"></div>
+                    </div>
+                </div>
             </div>
-            <p class="controls">SPACE to jump | T to talk</p>
-        </div>
 
-        <div id="gameOverScreen" class="hidden">
-            <h2>A Moment to Rest</h2>
-            <p class="finalScore">Distance traveled: <span id="finalScore">0</span></p>
-            <p class="highScore">Longest journey: <span id="finalHighScore">0</span></p>
-            <p style="color: #5A7A94;">Connections made: <span id="friendsFound">0</span></p>
-            <p class="philosophical-quote" id="deathQuote"></p>
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button class="btn" id="restartBtn">Continue On</button>
-                <button class="btn btn-talk" id="talkAfterBtn">Reflect</button>
+            <div class="stat-group">
+                <div class="stat-label">Hope</div>
+                <div class="gauge-container gauge-hope">
+                    <div class="gauge-label">
+                        <span>Fading</span>
+                        <span id="hopePercent">100%</span>
+                    </div>
+                    <div class="gauge-bar">
+                        <div class="gauge-fill" id="hopeGauge" style="width: 100%;"></div>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div id="talkScreen" class="hidden">
-            <h2>A Quiet Moment</h2>
-            <div id="chatContainer"></div>
-            <div id="chatInput">
-                <input type="text" id="userInput" placeholder="Share your thoughts..." maxlength="200">
-                <button id="sendBtn">Send</button>
+            <div class="stat-group">
+                <div class="stat-label">Energy</div>
+                <div class="gauge-container gauge-energy">
+                    <div class="gauge-label">
+                        <span>Tired</span>
+                        <span id="energyPercent">100%</span>
+                    </div>
+                    <div class="gauge-bar">
+                        <div class="gauge-fill" id="energyGauge" style="width: 100%;"></div>
+                    </div>
+                </div>
             </div>
-            <button class="btn btn-back" id="backBtn" style="margin-top: 15px;">Return</button>
+
+            <div class="stat-group">
+                <div class="stat-label">Speed</div>
+                <div class="gauge-container gauge-speed">
+                    <div class="gauge-label">
+                        <span>Slow</span>
+                        <span id="speedValue">4.5 km/h</span>
+                    </div>
+                    <div class="gauge-bar">
+                        <div class="gauge-fill" id="speedGauge" style="width: 40%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-group">
+                <div class="stat-label">Friends Met</div>
+                <div class="stat-value" id="statFriends">0</div>
+            </div>
         </div>
     </div>
 
-    <footer>Sometimes the longest journeys lead us back to ourselves.</footer>
+    <footer>The mountains wait. Hope carries you there.</footer>
 
     <script>
-        // Philosophical Penguin Dialogue System - Hopeful & Warm
-        const PENGUIN_THOUGHTS = {
-            greetings: [
-                "Oh, hello there. It's nice to have company. The ice feels less vast when shared.",
-                "You stopped to talk? That's... really kind. Pull up some ice, stay awhile.",
-                "*shuffles over to make room* Welcome, friend. The view is better together.",
-                "I was just watching the mountains. Funny how they seem closer when someone's beside you.",
-                "Hello! I was hoping someone might pass by today. The universe provides."
+        // ==================== GAME CONFIGURATION ====================
+        const CONFIG = {
+            gravity: 0.5,
+            jumpForce: -10.5,
+            groundHeight: 45,
+            penguinWidth: 40,
+            penguinHeight: 50,
+            goalDistance: 75, // km
+            baseSpeed: 4.5,
+            maxSpeed: 10,
+
+            // Rates (per frame at 60fps)
+            hopeLossRate: 0.015,
+            energyLossRate: 0.008,
+            energyLossWhenNoHope: 0.04,
+            fishEnergyBoost: 15,
+            encouragementHopeBoost: 20,
+            friendHopeBoost: 10,
+
+            obstacleFrequency: 0.01,
+            fishFrequency: 0.012,
+            friendFrequency: 0.003,
+
+            distancePerFrame: 0.002 // km per frame at base speed
+        };
+
+        // ==================== ENCOURAGING WORDS DETECTION ====================
+        const ENCOURAGING_PATTERNS = [
+            /\b(you can|you've got|believe|keep going|don't give up|stay strong)\b/i,
+            /\b(amazing|wonderful|great|awesome|fantastic|brilliant)\b/i,
+            /\b(love|proud|beautiful|brave|strong|hero)\b/i,
+            /\b(hope|faith|trust|courage|strength)\b/i,
+            /\b(almost there|so close|you're doing|doing great|doing well)\b/i,
+            /\b(friend|together|with you|here for you|not alone)\b/i,
+            /\b(yes|go|woohoo|yay|hooray|nice|good)\b/i,
+            /[!]{1,}$/,
+            /\b(come on|let's go|onwards|forward)\b/i
+        ];
+
+        const PENGUIN_RESPONSES = {
+            encouraged: [
+                "Thank you... that means a lot out here.",
+                "*waddles a bit faster* You're right!",
+                "The mountains feel closer when you say that.",
+                "I needed to hear that. Onwards!",
+                "*happy penguin noises*",
+                "You make the ice feel less cold.",
+                "With friends like you, I can do this!",
+                "My flippers feel lighter already!",
+                "Hope is a warm fish for the soul.",
+                "The horizon doesn't seem so far now."
             ],
-            loneliness: [
-                "Being alone taught me to enjoy my own company. That's a gift, I think.",
-                "Loneliness isn't the absence of others - it's forgetting that connection is always possible.",
-                "I used to fear the quiet. Now I hear the ice singing. It was always singing, I just wasn't listening.",
-                "Even alone, I'm part of something larger. The ice, the sky, the stars at night. We're all connected.",
-                "Sometimes solitude is just the space we need to grow into ourselves.",
-                "The funny thing about feeling lonely? It means you have love to give. That's beautiful."
+            neutral: [
+                "*tilts head* Hmm?",
+                "I hear you... the wind is loud out here.",
+                "*keeps waddling thoughtfully*",
+                "Every word helps pass the distance.",
+                "Company makes the journey lighter."
             ],
-            existence: [
-                "I exist! Isn't that remarkable? Out of infinite possibilities, here we are, talking.",
-                "I think, therefore I waddle. And waddling is its own kind of purpose.",
-                "The ice beneath my feet, the sky above - every moment is a small miracle when you really look.",
-                "We're all just stardust that learned to wonder about itself. How amazing is that?",
-                "Existence is the universe's way of experiencing itself. We're the cosmos having a conversation!",
-                "I may be small on this big ice, but I contain multitudes. We all do."
+            lowHope: [
+                "I'm trying... it's just so far...",
+                "*waddles slower* The mountains never get closer...",
+                "Maybe... maybe I need to rest soon...",
+                "The ice feels heavier today...",
+                "Tell me something hopeful?"
             ],
-            meaning: [
-                "I've stopped searching for THE meaning. Instead, I find little meanings everywhere - a warm fish, a kind word, a beautiful sunset.",
-                "Maybe meaning isn't something we find. Maybe it's something we create, one moment at a time.",
-                "The search for meaning IS meaningful. The question IS the answer. Isn't that freeing?",
-                "I think meaning is like the horizon - always ahead, always guiding, but the joy is in the walking.",
-                "You know what gives me meaning? Moments like this. Connection. Presence. That's enough.",
-                "Purpose might just be paying attention to what's beautiful and sharing it with others."
-            ],
-            friendship: [
-                "Every friend I've made started as a stranger on the ice. That gives me hope about everyone I haven't met yet.",
-                "Friendship is choosing each other, over and over. Even across distance. Even in silence.",
-                "The friends who stay, the friends who go - they all leave footprints on my heart. I'm grateful for each one.",
-                "Connection doesn't require being together always. Some friends are like stars - distant but constant.",
-                "I believe everyone we meet teaches us something. Every encounter is a gift.",
-                "The best friendships feel like coming home, even in the middle of an ice field."
-            ],
-            hope: [
-                "Hope is choosing to see the dawn before the night ends. And dawn always comes.",
-                "Every step forward is an act of hope. Look at us, still stepping!",
-                "The ice melts, reforms, changes - but it endures. So do we. So does hope.",
-                "I've seen storms pass. I've seen the aurora appear when I least expected it. Good things come.",
-                "Hope isn't naive - it's brave. It's saying 'yes' to tomorrow before you know what it holds.",
-                "Even on the coldest nights, I know the sun is just beyond the horizon. That's hope."
-            ],
-            absurd: [
-                "I'm a bird who can't fly but can swim like a torpedo. Life has a wonderful sense of humor!",
-                "The universe gave me a tuxedo for standing on ice. I choose to believe that's delightful, not absurd.",
-                "Sometimes I waddle in circles just because it feels good. Not everything needs a reason!",
-                "Wings that became flippers - that's not a loss, it's an evolution. We adapt, we grow, we find new ways.",
-                "The absurdity of existence is what makes it interesting. Predictable would be boring!",
-                "I slide on my belly for fun. Life should include more belly-sliding, metaphorically speaking."
-            ],
-            fish: [
-                "A good fish is one of life's simple pleasures. Never underestimate simple pleasures!",
-                "Fish teach me presence - they're always in the moment. Swim, eat, be. There's wisdom there.",
-                "I'm grateful for fish. Gratitude for small things fills life with richness.",
-                "The ocean provides. Nature has a way of taking care of those who trust it.",
-                "Every fish is a little celebration. I try to appreciate each one.",
-                "Fish swimming beneath the ice remind me - there's always more happening than we can see."
-            ],
-            journey: [
-                "The path behind me looks different than I expected. The path ahead is full of possibility.",
-                "Every waddle counts. Every step is progress, even the wobbly ones.",
-                "I don't know where I'm going, exactly. But I'm going. That's what matters.",
-                "The journey changes us. I'm not the same penguin who started walking. I've grown.",
-                "Sometimes the longest journeys are the ones we take inside ourselves.",
-                "There's no wrong direction when you're exploring. Every path teaches something."
-            ],
-            default: [
-                "*tilts head thoughtfully* Hmm, that's interesting. Tell me more?",
-                "I'm still learning about so many things. What do you think about it?",
-                "*gazes at the horizon* Life is full of mysteries, isn't it? And that's wonderful.",
-                "Every question is a door. Some doors I haven't opened yet, but I'm curious.",
-                "I don't have all the answers, but I'm happy to wonder about it together.",
-                "The ice doesn't give easy answers either. But sitting with questions has its own peace.",
-                "*shuffles feet* I'm not sure, but I'm glad you asked. Asking matters."
+            lowEnergy: [
+                "*yawn* So tired...",
+                "Need... fish...",
+                "My flippers are getting heavy...",
+                "Just... a little... further...",
+                "*stumbles slightly*"
             ]
         };
 
-        const GAME_OVER_QUOTES = [
-            "Rest is part of the journey. You'll go further after pausing.",
-            "Every ending is a chance to begin again, a little wiser.",
-            "The ice is patient. It will be here when you're ready.",
-            "You traveled far. Take a moment to appreciate how far.",
-            "Obstacles aren't failures - they're the rhythm of progress.",
-            "Even the longest journey is made of single steps. You took many.",
-            "Sometimes we rest. Then we rise. This is the way.",
-            "The horizon waits. It's not going anywhere. Neither is your courage."
-        ];
+        // ==================== GAME STATE ====================
+        let canvas, ctx;
+        let gameRunning = false;
+        let gamePaused = false;
 
-        // Keyword detection for contextual responses
-        function detectTopic(message) {
-            const lower = message.toLowerCase();
-            if (/\b(hi|hello|hey|greetings|sup|howdy)\b/.test(lower)) return 'greetings';
-            if (/\b(lonely|alone|solitude|isolated|nobody|no one|by myself)\b/.test(lower)) return 'loneliness';
-            if (/\b(exist|reality|real|am i|consciousness|aware|being|alive|life)\b/.test(lower)) return 'existence';
-            if (/\b(meaning|purpose|why|point|reason|matter|goal)\b/.test(lower)) return 'meaning';
-            if (/\b(friend|companion|together|relationship|love|connection|people)\b/.test(lower)) return 'friendship';
-            if (/\b(hope|future|better|tomorrow|dream|wish|optimis|faith)\b/.test(lower)) return 'hope';
-            if (/\b(absurd|weird|strange|funny|joke|humor|ironic|silly)\b/.test(lower)) return 'absurd';
-            if (/\b(fish|eat|food|hungry|swim|ocean|sea)\b/.test(lower)) return 'fish';
-            if (/\b(journey|travel|walk|path|road|adventure|explore|wander)\b/.test(lower)) return 'journey';
-            return 'default';
-        }
+        let distance = 0;
+        let hope = 100;
+        let energy = 100;
+        let friends = 0;
+        let currentSpeed = CONFIG.baseSpeed;
 
-        function getPenguinResponse(userMessage) {
-            const topic = detectTopic(userMessage);
-            const responses = PENGUIN_THOUGHTS[topic];
-            return responses[Math.floor(Math.random() * responses.length)];
-        }
+        let penguin = {
+            x: 80,
+            y: 0,
+            vy: 0,
+            width: CONFIG.penguinWidth,
+            height: CONFIG.penguinHeight,
+            grounded: true,
+            jumpCount: 0,
+            sleeping: false
+        };
 
-        // Chat functionality
-        let chatHistory = [];
+        let obstacles = [];
+        let fish = [];
+        let friendPenguins = [];
+        let particles = [];
+        let snowflakes = [];
 
-        function addMessage(text, isUser) {
-            const chatContainer = document.getElementById('chatContainer');
-            const message = document.createElement('div');
-            message.className = `message ${isUser ? 'user-message' : 'penguin-message'}`;
-            message.textContent = text;
-            chatContainer.appendChild(message);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-            chatHistory.push({ text, isUser });
-        }
+        let chatOpen = false;
+        let speechTimeout = null;
+        let lastHighlightedRank = -1;
 
-        function showThinking() {
-            const chatContainer = document.getElementById('chatContainer');
-            const thinking = document.createElement('div');
-            thinking.className = 'message penguin-message thinking';
-            thinking.id = 'thinkingIndicator';
-            thinking.textContent = 'thinking';
-            chatContainer.appendChild(thinking);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
+        // Leaderboard
+        let leaderboard = JSON.parse(localStorage.getItem('penguinLeaderboard')) || [];
 
-        function hideThinking() {
-            const thinking = document.getElementById('thinkingIndicator');
-            if (thinking) thinking.remove();
-        }
-
-        function sendMessage() {
-            const input = document.getElementById('userInput');
-            const text = input.value.trim();
-            if (!text) return;
-
-            addMessage(text, true);
-            input.value = '';
-
-            showThinking();
-
-            setTimeout(() => {
-                hideThinking();
-                const response = getPenguinResponse(text);
-                addMessage(response, false);
-            }, 800 + Math.random() * 1200);
-        }
-
-        function openTalkScreen() {
-            document.getElementById('startScreen').classList.add('hidden');
-            document.getElementById('gameOverScreen').classList.add('hidden');
-            document.getElementById('talkScreen').classList.remove('hidden');
-            document.getElementById('ui').classList.add('hidden');
-            gameRunning = false;
-
-            if (chatHistory.length === 0) {
-                setTimeout(() => {
-                    const greeting = PENGUIN_THOUGHTS.greetings[Math.floor(Math.random() * PENGUIN_THOUGHTS.greetings.length)];
-                    addMessage(greeting, false);
-                }, 500);
-            }
-
-            document.getElementById('userInput').focus();
-        }
-
-        function closeTalkScreen() {
-            document.getElementById('talkScreen').classList.add('hidden');
-            document.getElementById('startScreen').classList.remove('hidden');
-        }
-
-        // Color Palette from reference image
+        // Colors
         const COLORS = {
             skyTop: '#7A8FA3',
             skyMid: '#A3B5C4',
@@ -542,78 +694,35 @@
             iceLight: '#E8EDF2',
             iceHighlight: '#F5F8FA',
             penguin: '#1A1A2E',
-            penguinBelly: '#E8EDF2',
-            accent: '#4A6B8A'
+            penguinBelly: '#E8EDF2'
         };
 
-        // Game Configuration
-        const CONFIG = {
-            gravity: 0.55,
-            jumpForce: -11.5,
-            groundHeight: 50,
-            penguinWidth: 45,
-            penguinHeight: 55,
-            baseSpeed: 4.5,
-            maxSpeed: 11,
-            speedIncrement: 0.0008,
-            obstacleFrequency: 0.012,
-            fishFrequency: 0.008,
-            friendFrequency: 0.0025
-        };
-
-        // Game State
-        let canvas, ctx;
-        let gameRunning = false;
-        let score = 0;
-        let highScore = localStorage.getItem('penguinHighScore') || 0;
-        let friends = 0;
-        let gameSpeed = CONFIG.baseSpeed;
-        let frameCount = 0;
-
-        // Game Objects
-        let penguin = {
-            x: 100,
-            y: 0,
-            vy: 0,
-            width: CONFIG.penguinWidth,
-            height: CONFIG.penguinHeight,
-            grounded: true,
-            jumpCount: 0
-        };
-
-        let obstacles = [];
-        let fish = [];
-        let friendPenguins = [];
-        let particles = [];
-        let snowflakes = [];
-
-        // Initialize
+        // ==================== INITIALIZATION ====================
         function init() {
             canvas = document.getElementById('gameCanvas');
             ctx = canvas.getContext('2d');
 
-            document.getElementById('highScoreDisplay').textContent = `Best: ${highScore}`;
-
-            // Generate snowflakes/ice particles
-            for (let i = 0; i < 40; i++) {
+            // Generate snowflakes
+            for (let i = 0; i < 30; i++) {
                 snowflakes.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
                     size: Math.random() * 2 + 0.5,
-                    speed: Math.random() * 0.5 + 0.2,
-                    opacity: Math.random() * 0.4 + 0.2
+                    speed: Math.random() * 0.4 + 0.2,
+                    opacity: Math.random() * 0.3 + 0.2
                 });
             }
 
             // Event Listeners
             document.getElementById('startBtn').addEventListener('click', startGame);
             document.getElementById('restartBtn').addEventListener('click', startGame);
-            document.getElementById('talkBtn').addEventListener('click', openTalkScreen);
-            document.getElementById('talkAfterBtn').addEventListener('click', openTalkScreen);
-            document.getElementById('backBtn').addEventListener('click', closeTalkScreen);
-            document.getElementById('sendBtn').addEventListener('click', sendMessage);
-            document.getElementById('userInput').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') sendMessage();
+            document.getElementById('viewLeaderboardBtn').addEventListener('click', showLeaderboard);
+            document.getElementById('leaderboardBtn').addEventListener('click', showLeaderboard);
+            document.getElementById('backFromLeaderboard').addEventListener('click', hideLeaderboard);
+            document.getElementById('saveScoreBtn').addEventListener('click', saveScore);
+            document.getElementById('gameChatSend').addEventListener('click', sendGameChat);
+            document.getElementById('gameChat').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendGameChat();
             });
 
             document.addEventListener('keydown', handleKeyDown);
@@ -622,32 +731,33 @@
 
             resetPenguin();
             render();
-        }
-
-        function handleClick(e) {
-            if (e) e.preventDefault();
-            if (!document.getElementById('talkScreen').classList.contains('hidden')) return;
-            handleJump();
+            updateLeaderboardDisplay();
         }
 
         function startGame() {
             gameRunning = true;
-            score = 0;
+            gamePaused = false;
+            distance = 0;
+            hope = 100;
+            energy = 100;
             friends = 0;
-            gameSpeed = CONFIG.baseSpeed;
-            frameCount = 0;
+            currentSpeed = CONFIG.baseSpeed;
             obstacles = [];
             fish = [];
             friendPenguins = [];
             particles = [];
 
             resetPenguin();
+            penguin.sleeping = false;
 
             document.getElementById('startScreen').classList.add('hidden');
             document.getElementById('gameOverScreen').classList.add('hidden');
-            document.getElementById('talkScreen').classList.add('hidden');
-            document.getElementById('ui').classList.remove('hidden');
+            document.getElementById('leaderboardScreen').classList.add('hidden');
+            document.getElementById('distanceOverlay').classList.remove('hidden');
+            document.getElementById('chatHint').classList.remove('hidden');
+            document.getElementById('sleepMessage').classList.remove('visible');
 
+            updateUI();
             gameLoop();
         }
 
@@ -658,57 +768,159 @@
             penguin.jumpCount = 0;
         }
 
+        // ==================== INPUT HANDLING ====================
         function handleKeyDown(e) {
-            if (e.code === 'Space') {
+            if (e.code === 'Space' && gameRunning && !chatOpen) {
                 e.preventDefault();
-                if (!document.getElementById('talkScreen').classList.contains('hidden')) return;
-                if (!gameRunning && !document.getElementById('startScreen').classList.contains('hidden')) {
-                    startGame();
-                } else {
-                    handleJump();
-                }
+                handleJump();
             }
-            if (e.code === 'KeyT' && !gameRunning) {
-                openTalkScreen();
+
+            if (e.code === 'Enter' && gameRunning && !penguin.sleeping) {
+                e.preventDefault();
+                toggleChat();
+            }
+
+            if (e.code === 'Escape' && chatOpen) {
+                toggleChat();
             }
         }
 
+        function handleClick(e) {
+            if (!gameRunning || chatOpen || penguin.sleeping) return;
+            e.preventDefault();
+            handleJump();
+        }
+
         function handleJump() {
-            if (!gameRunning) return;
+            if (!gameRunning || penguin.sleeping || energy <= 0) return;
 
             if (penguin.grounded || penguin.jumpCount < 2) {
                 penguin.vy = CONFIG.jumpForce;
                 penguin.grounded = false;
                 penguin.jumpCount++;
+                energy = Math.max(0, energy - 0.5);
 
-                // Subtle jump particles
-                for (let i = 0; i < 4; i++) {
+                for (let i = 0; i < 3; i++) {
                     particles.push({
                         x: penguin.x + penguin.width / 2,
                         y: penguin.y + penguin.height,
-                        vx: (Math.random() - 0.5) * 3,
-                        vy: Math.random() * 1.5,
-                        life: 18,
+                        vx: (Math.random() - 0.5) * 2,
+                        vy: Math.random() * 1,
+                        life: 15,
                         color: COLORS.iceHighlight
                     });
                 }
             }
         }
 
+        function toggleChat() {
+            chatOpen = !chatOpen;
+            const container = document.getElementById('gameChatContainer');
+            const hint = document.getElementById('chatHint');
+
+            if (chatOpen) {
+                container.classList.add('active');
+                hint.classList.add('hidden');
+                document.getElementById('gameChat').focus();
+            } else {
+                container.classList.remove('active');
+                hint.classList.remove('hidden');
+                document.getElementById('gameChat').value = '';
+            }
+        }
+
+        function sendGameChat() {
+            const input = document.getElementById('gameChat');
+            const message = input.value.trim();
+            if (!message) return;
+
+            input.value = '';
+
+            // Check if encouraging
+            const isEncouraging = ENCOURAGING_PATTERNS.some(pattern => pattern.test(message));
+
+            if (isEncouraging) {
+                hope = Math.min(100, hope + CONFIG.encouragementHopeBoost);
+                showSpeechBubble(PENGUIN_RESPONSES.encouraged[Math.floor(Math.random() * PENGUIN_RESPONSES.encouraged.length)]);
+
+                // Sparkle effect
+                for (let i = 0; i < 8; i++) {
+                    particles.push({
+                        x: penguin.x + penguin.width / 2 + (Math.random() - 0.5) * 40,
+                        y: penguin.y + (Math.random() - 0.5) * 30,
+                        vx: (Math.random() - 0.5) * 3,
+                        vy: (Math.random() - 0.5) * 3,
+                        life: 30,
+                        color: '#FFD700'
+                    });
+                }
+            } else {
+                // Still show response but no hope boost
+                let responses = PENGUIN_RESPONSES.neutral;
+                if (hope < 30) responses = PENGUIN_RESPONSES.lowHope;
+                if (energy < 30) responses = PENGUIN_RESPONSES.lowEnergy;
+                showSpeechBubble(responses[Math.floor(Math.random() * responses.length)]);
+            }
+
+            toggleChat();
+        }
+
+        function showSpeechBubble(text) {
+            const bubble = document.getElementById('speechBubble');
+            bubble.textContent = text;
+            bubble.classList.add('visible');
+
+            if (speechTimeout) clearTimeout(speechTimeout);
+            speechTimeout = setTimeout(() => {
+                bubble.classList.remove('visible');
+            }, 3500);
+        }
+
+        // ==================== GAME LOOP ====================
         function gameLoop() {
             if (!gameRunning) return;
 
             update();
             render();
+            updateUI();
 
             requestAnimationFrame(gameLoop);
         }
 
         function update() {
-            frameCount++;
+            if (penguin.sleeping) return;
 
-            gameSpeed = Math.min(CONFIG.maxSpeed, CONFIG.baseSpeed + frameCount * CONFIG.speedIncrement);
+            // Calculate speed based on hope and energy
+            const hopeFactor = 0.5 + (hope / 200);
+            const energyFactor = 0.5 + (energy / 200);
+            currentSpeed = CONFIG.baseSpeed * hopeFactor * energyFactor;
+            currentSpeed = Math.max(1, Math.min(CONFIG.maxSpeed, currentSpeed));
 
+            // Update distance
+            distance += CONFIG.distancePerFrame * (currentSpeed / CONFIG.baseSpeed);
+
+            // Check win condition
+            if (distance >= CONFIG.goalDistance) {
+                gameWin();
+                return;
+            }
+
+            // Decay hope and energy
+            hope = Math.max(0, hope - CONFIG.hopeLossRate);
+
+            if (hope <= 0) {
+                energy = Math.max(0, energy - CONFIG.energyLossWhenNoHope);
+            } else {
+                energy = Math.max(0, energy - CONFIG.energyLossRate);
+            }
+
+            // Check if penguin falls asleep
+            if (energy <= 0) {
+                penguinSleep();
+                return;
+            }
+
+            // Physics
             penguin.vy += CONFIG.gravity;
             penguin.y += penguin.vy;
 
@@ -720,30 +932,42 @@
                 penguin.jumpCount = 0;
             }
 
-            // Spawn obstacles
-            if (Math.random() < CONFIG.obstacleFrequency * (gameSpeed / CONFIG.baseSpeed)) {
-                const lastObstacle = obstacles[obstacles.length - 1];
-                if (!lastObstacle || lastObstacle.x < canvas.width - 220) {
+            // Spawn objects
+            if (Math.random() < CONFIG.obstacleFrequency) {
+                const last = obstacles[obstacles.length - 1];
+                if (!last || last.x < canvas.width - 180) {
                     spawnObstacle();
                 }
             }
 
-            // Spawn fish
             if (Math.random() < CONFIG.fishFrequency) {
                 spawnFish();
             }
 
-            // Spawn friend penguins
             if (Math.random() < CONFIG.friendFrequency) {
                 spawnFriend();
             }
 
             // Update obstacles
             obstacles = obstacles.filter(obs => {
-                obs.x -= gameSpeed;
+                obs.x -= currentSpeed;
 
                 if (checkCollision(penguin, obs)) {
-                    gameOver();
+                    hope = Math.max(0, hope - 15);
+                    energy = Math.max(0, energy - 10);
+                    showSpeechBubble("Oof! That hurt...");
+
+                    // Knock back effect
+                    for (let i = 0; i < 5; i++) {
+                        particles.push({
+                            x: obs.x,
+                            y: obs.y + obs.height / 2,
+                            vx: -Math.random() * 3,
+                            vy: (Math.random() - 0.5) * 4,
+                            life: 20,
+                            color: '#B0BEC5'
+                        });
+                    }
                     return false;
                 }
 
@@ -752,12 +976,21 @@
 
             // Update fish
             fish = fish.filter(f => {
-                f.x -= gameSpeed;
-                f.y += Math.sin(frameCount * 0.08 + f.offset) * 0.4;
+                f.x -= currentSpeed;
+                f.y += Math.sin(Date.now() * 0.005 + f.offset) * 0.3;
 
                 if (checkCollision(penguin, f)) {
-                    score += 10;
-                    createCollectParticles(f.x, f.y, '#6A9BC4');
+                    energy = Math.min(100, energy + CONFIG.fishEnergyBoost);
+
+                    for (let i = 0; i < 6; i++) {
+                        particles.push({
+                            x: f.x, y: f.y,
+                            vx: (Math.random() - 0.5) * 4,
+                            vy: (Math.random() - 0.5) * 4,
+                            life: 25,
+                            color: '#64B5F6'
+                        });
+                    }
                     return false;
                 }
 
@@ -766,12 +999,22 @@
 
             // Update friend penguins
             friendPenguins = friendPenguins.filter(f => {
-                f.x -= gameSpeed * 0.75;
+                f.x -= currentSpeed * 0.7;
 
                 if (checkCollision(penguin, f)) {
                     friends++;
-                    score += 50;
-                    createCollectParticles(f.x, f.y, '#8FB5D4');
+                    hope = Math.min(100, hope + CONFIG.friendHopeBoost);
+                    showSpeechBubble("A friend! I'm not alone!");
+
+                    for (let i = 0; i < 8; i++) {
+                        particles.push({
+                            x: f.x, y: f.y,
+                            vx: (Math.random() - 0.5) * 5,
+                            vy: (Math.random() - 0.5) * 5,
+                            life: 30,
+                            color: '#F48FB1'
+                        });
+                    }
                     return false;
                 }
 
@@ -789,54 +1032,76 @@
             // Update snowflakes
             snowflakes.forEach(snow => {
                 snow.y += snow.speed;
-                snow.x += Math.sin(frameCount * 0.015 + snow.x * 0.01) * 0.2;
+                snow.x += Math.sin(Date.now() * 0.001 + snow.x * 0.01) * 0.15;
                 if (snow.y > canvas.height) {
                     snow.y = 0;
                     snow.x = Math.random() * canvas.width;
                 }
             });
-
-            score += 0.1;
-
-            document.getElementById('scoreDisplay').textContent = `Distance: ${Math.floor(score)}`;
-            document.getElementById('lonelinessDisplay').textContent = `Friends: ${friends}`;
         }
 
+        function penguinSleep() {
+            penguin.sleeping = true;
+            document.getElementById('sleepMessage').classList.add('visible');
+
+            setTimeout(() => {
+                gameOver();
+            }, 2000);
+        }
+
+        function gameWin() {
+            gameRunning = false;
+            document.getElementById('gameOverTitle').textContent = "You Made It!";
+            document.getElementById('reachedGoalMsg').textContent = "The penguin reached the mountains!";
+            document.getElementById('reachedGoalMsg').style.display = 'block';
+            showGameOver();
+        }
+
+        function gameOver() {
+            gameRunning = false;
+            document.getElementById('gameOverTitle').textContent = "Journey Paused";
+            document.getElementById('reachedGoalMsg').style.display = 'none';
+            showGameOver();
+        }
+
+        function showGameOver() {
+            document.getElementById('finalDistance').textContent = distance.toFixed(2);
+            document.getElementById('finalFriends').textContent = friends;
+            document.getElementById('distanceOverlay').classList.add('hidden');
+            document.getElementById('chatHint').classList.add('hidden');
+            document.getElementById('gameChatContainer').classList.remove('active');
+            document.getElementById('sleepMessage').classList.remove('visible');
+            document.getElementById('gameOverScreen').classList.remove('hidden');
+            document.getElementById('playerName').focus();
+        }
+
+        // ==================== SPAWNING ====================
         function spawnObstacle() {
-            const types = ['ice_chunk', 'snow_mound', 'rock'];
+            const types = ['ice_chunk', 'snow_mound'];
             const type = types[Math.floor(Math.random() * types.length)];
 
             let width, height;
-            switch(type) {
-                case 'ice_chunk':
-                    width = 35 + Math.random() * 25;
-                    height = 45 + Math.random() * 35;
-                    break;
-                case 'snow_mound':
-                    width = 50 + Math.random() * 20;
-                    height = 35 + Math.random() * 20;
-                    break;
-                case 'rock':
-                    width = 40;
-                    height = 32;
-                    break;
+            if (type === 'ice_chunk') {
+                width = 30 + Math.random() * 20;
+                height = 40 + Math.random() * 30;
+            } else {
+                width = 45 + Math.random() * 15;
+                height = 30 + Math.random() * 15;
             }
 
             obstacles.push({
                 x: canvas.width,
                 y: canvas.height - CONFIG.groundHeight - height,
-                width: width,
-                height: height,
-                type: type
+                width, height, type
             });
         }
 
         function spawnFish() {
             fish.push({
                 x: canvas.width,
-                y: canvas.height - CONFIG.groundHeight - 70 - Math.random() * 90,
-                width: 28,
-                height: 18,
+                y: canvas.height - CONFIG.groundHeight - 60 - Math.random() * 80,
+                width: 25,
+                height: 16,
                 offset: Math.random() * Math.PI * 2
             });
         }
@@ -844,51 +1109,126 @@
         function spawnFriend() {
             friendPenguins.push({
                 x: canvas.width,
-                y: canvas.height - CONFIG.groundHeight - 45,
-                width: 35,
-                height: 45
+                y: canvas.height - CONFIG.groundHeight - 40,
+                width: 30,
+                height: 40
             });
         }
 
         function checkCollision(a, b) {
-            const padding = 6;
-            return a.x + padding < b.x + b.width - padding &&
-                   a.x + a.width - padding > b.x + padding &&
-                   a.y + padding < b.y + b.height - padding &&
-                   a.y + a.height - padding > b.y + padding;
+            const pad = 5;
+            return a.x + pad < b.x + b.width - pad &&
+                   a.x + a.width - pad > b.x + pad &&
+                   a.y + pad < b.y + b.height - pad &&
+                   a.y + a.height - pad > b.y + pad;
         }
 
-        function createCollectParticles(x, y, color) {
-            for (let i = 0; i < 8; i++) {
-                particles.push({
-                    x: x,
-                    y: y,
-                    vx: (Math.random() - 0.5) * 5,
-                    vy: (Math.random() - 0.5) * 5,
-                    life: 25,
-                    color: color
-                });
+        // ==================== UI UPDATE ====================
+        function updateUI() {
+            document.getElementById('distanceDisplay').textContent = distance.toFixed(2);
+            document.getElementById('statDistance').textContent = distance.toFixed(2);
+            document.getElementById('statFriends').textContent = friends;
+
+            document.getElementById('hopePercent').textContent = Math.round(hope) + '%';
+            document.getElementById('hopeGauge').style.width = hope + '%';
+
+            document.getElementById('energyPercent').textContent = Math.round(energy) + '%';
+            document.getElementById('energyGauge').style.width = energy + '%';
+
+            document.getElementById('speedValue').textContent = currentSpeed.toFixed(1) + ' km/h';
+            document.getElementById('speedGauge').style.width = (currentSpeed / CONFIG.maxSpeed * 100) + '%';
+
+            document.getElementById('distanceGauge').style.width = (distance / CONFIG.goalDistance * 100) + '%';
+        }
+
+        // ==================== LEADERBOARD ====================
+        function saveScore() {
+            const nameInput = document.getElementById('playerName');
+            const name = nameInput.value.trim() || 'Anonymous';
+
+            const entry = {
+                name: name.substring(0, 15),
+                distance: parseFloat(distance.toFixed(2)),
+                friends: friends,
+                date: new Date().toISOString()
+            };
+
+            leaderboard.push(entry);
+            leaderboard.sort((a, b) => b.distance - a.distance);
+
+            localStorage.setItem('penguinLeaderboard', JSON.stringify(leaderboard));
+
+            // Find rank of this entry
+            const rank = leaderboard.findIndex(e => e === entry);
+            lastHighlightedRank = rank;
+
+            document.getElementById('saveScoreBtn').textContent = 'Saved!';
+            document.getElementById('saveScoreBtn').disabled = true;
+
+            setTimeout(() => {
+                showLeaderboard();
+            }, 500);
+        }
+
+        function showLeaderboard() {
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('gameOverScreen').classList.add('hidden');
+            document.getElementById('leaderboardScreen').classList.remove('hidden');
+            updateLeaderboardDisplay();
+        }
+
+        function hideLeaderboard() {
+            document.getElementById('leaderboardScreen').classList.add('hidden');
+            document.getElementById('startScreen').classList.remove('hidden');
+            lastHighlightedRank = -1;
+
+            // Reset save button
+            document.getElementById('saveScoreBtn').textContent = 'Save Score';
+            document.getElementById('saveScoreBtn').disabled = false;
+        }
+
+        function updateLeaderboardDisplay() {
+            const container = document.getElementById('leaderboardTable');
+            container.innerHTML = '';
+
+            // Header
+            const header = document.createElement('div');
+            header.className = 'leaderboard-row header';
+            header.innerHTML = '<span class="rank">#</span><span class="name">Name</span><span class="distance">Distance</span>';
+            container.appendChild(header);
+
+            // Top 20
+            const top20 = leaderboard.slice(0, 20);
+            top20.forEach((entry, index) => {
+                const row = document.createElement('div');
+                row.className = 'leaderboard-row' + (index === lastHighlightedRank ? ' highlight' : '');
+                row.innerHTML = `
+                    <span class="rank">${index + 1}</span>
+                    <span class="name">${escapeHtml(entry.name)}</span>
+                    <span class="distance">${entry.distance.toFixed(2)} km</span>
+                `;
+                container.appendChild(row);
+            });
+
+            if (top20.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'leaderboard-row';
+                empty.innerHTML = '<span style="color: #5A7A94; width: 100%; text-align: center;">No journeys recorded yet</span>';
+                container.appendChild(empty);
             }
+
+            document.getElementById('totalJourneys').textContent = leaderboard.length;
         }
 
-        function gameOver() {
-            gameRunning = false;
-
-            if (score > highScore) {
-                highScore = Math.floor(score);
-                localStorage.setItem('penguinHighScore', highScore);
-            }
-
-            document.getElementById('finalScore').textContent = Math.floor(score);
-            document.getElementById('finalHighScore').textContent = highScore;
-            document.getElementById('friendsFound').textContent = friends;
-            document.getElementById('highScoreDisplay').textContent = `Best: ${highScore}`;
-            document.getElementById('deathQuote').textContent = GAME_OVER_QUOTES[Math.floor(Math.random() * GAME_OVER_QUOTES.length)];
-            document.getElementById('gameOverScreen').classList.remove('hidden');
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
+        // ==================== RENDERING ====================
         function render() {
-            // Sky gradient - matching reference image
+            // Sky
             const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
             skyGradient.addColorStop(0, COLORS.skyTop);
             skyGradient.addColorStop(0.4, COLORS.skyMid);
@@ -897,10 +1237,10 @@
             ctx.fillStyle = skyGradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Draw layered mountains with atmospheric perspective
+            // Mountains (closer as distance increases)
             drawMountains();
 
-            // Draw subtle snowflakes
+            // Snowflakes
             snowflakes.forEach(snow => {
                 ctx.globalAlpha = snow.opacity;
                 ctx.fillStyle = COLORS.iceHighlight;
@@ -910,81 +1250,88 @@
             });
             ctx.globalAlpha = 1;
 
-            // Draw ice field with texture
+            // Ice field
             drawIceField();
 
-            // Draw obstacles
+            // Game objects
             obstacles.forEach(obs => drawObstacle(obs));
-
-            // Draw fish
             fish.forEach(f => drawFish(f.x, f.y));
-
-            // Draw friend penguins
             friendPenguins.forEach(f => drawFriendPenguin(f.x, f.y));
 
-            // Draw main penguin
-            drawPenguin(penguin.x, penguin.y);
+            // Penguin
+            drawPenguin(penguin.x, penguin.y, penguin.sleeping);
 
-            // Draw particles
+            // Particles
             particles.forEach(p => {
-                ctx.globalAlpha = p.life / 25;
+                ctx.globalAlpha = p.life / 30;
                 ctx.fillStyle = p.color;
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
                 ctx.fill();
             });
             ctx.globalAlpha = 1;
+
+            // Hope/Energy warning overlays
+            if (hope < 20) {
+                ctx.fillStyle = `rgba(150, 100, 100, ${(20 - hope) / 100})`;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+            if (energy < 20) {
+                ctx.fillStyle = `rgba(50, 50, 80, ${(20 - energy) / 80})`;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
         }
 
         function drawMountains() {
-            // Far mountains - most faded
+            // Mountains get "closer" (larger) as distance increases
+            const progress = distance / CONFIG.goalDistance;
+            const scale = 1 + progress * 0.5;
+
+            // Far mountains
             ctx.fillStyle = COLORS.mountainFar;
             ctx.beginPath();
-            ctx.moveTo(0, 200);
-            ctx.lineTo(80, 100);
-            ctx.lineTo(160, 150);
-            ctx.lineTo(240, 60);
-            ctx.lineTo(320, 130);
-            ctx.lineTo(400, 80);
-            ctx.lineTo(480, 140);
-            ctx.lineTo(560, 50);
-            ctx.lineTo(640, 120);
-            ctx.lineTo(720, 70);
-            ctx.lineTo(800, 110);
-            ctx.lineTo(800, 200);
+            ctx.moveTo(0, 180);
+            ctx.lineTo(60 * scale, 100 - progress * 30);
+            ctx.lineTo(120, 140);
+            ctx.lineTo(200 * scale, 70 - progress * 25);
+            ctx.lineTo(280, 130);
+            ctx.lineTo(350, 90 - progress * 20);
+            ctx.lineTo(420, 125);
+            ctx.lineTo(500 * scale, 60 - progress * 30);
+            ctx.lineTo(560, 110);
+            ctx.lineTo(600, 100);
+            ctx.lineTo(600, 180);
             ctx.closePath();
             ctx.fill();
 
             // Mid mountains
             ctx.fillStyle = COLORS.mountainMid;
             ctx.beginPath();
-            ctx.moveTo(0, 220);
-            ctx.lineTo(100, 150);
-            ctx.lineTo(180, 180);
-            ctx.lineTo(280, 120);
-            ctx.lineTo(380, 170);
-            ctx.lineTo(460, 130);
-            ctx.lineTo(560, 160);
-            ctx.lineTo(660, 110);
-            ctx.lineTo(760, 150);
-            ctx.lineTo(800, 140);
-            ctx.lineTo(800, 220);
+            ctx.moveTo(0, 200);
+            ctx.lineTo(80, 140 - progress * 20);
+            ctx.lineTo(160, 170);
+            ctx.lineTo(240, 120 - progress * 25);
+            ctx.lineTo(320, 160);
+            ctx.lineTo(400, 130 - progress * 20);
+            ctx.lineTo(480, 155);
+            ctx.lineTo(560, 115 - progress * 25);
+            ctx.lineTo(600, 140);
+            ctx.lineTo(600, 200);
             ctx.closePath();
             ctx.fill();
 
             // Near mountains
             ctx.fillStyle = COLORS.mountainNear;
             ctx.beginPath();
-            ctx.moveTo(0, 260);
-            ctx.lineTo(120, 190);
-            ctx.lineTo(220, 220);
-            ctx.lineTo(340, 175);
-            ctx.lineTo(440, 210);
-            ctx.lineTo(540, 180);
-            ctx.lineTo(640, 205);
-            ctx.lineTo(740, 170);
-            ctx.lineTo(800, 195);
-            ctx.lineTo(800, 260);
+            ctx.moveTo(0, 230);
+            ctx.lineTo(100, 175 - progress * 15);
+            ctx.lineTo(180, 200);
+            ctx.lineTo(280, 160 - progress * 20);
+            ctx.lineTo(380, 190);
+            ctx.lineTo(460, 165 - progress * 15);
+            ctx.lineTo(540, 185);
+            ctx.lineTo(600, 170);
+            ctx.lineTo(600, 230);
             ctx.closePath();
             ctx.fill();
         }
@@ -992,150 +1339,148 @@
         function drawIceField() {
             const groundY = canvas.height - CONFIG.groundHeight;
 
-            // Ice field gradient
-            const iceGradient = ctx.createLinearGradient(0, groundY - 100, 0, canvas.height);
+            const iceGradient = ctx.createLinearGradient(0, groundY - 80, 0, canvas.height);
             iceGradient.addColorStop(0, COLORS.iceShadow);
             iceGradient.addColorStop(0.3, COLORS.iceLight);
             iceGradient.addColorStop(1, COLORS.iceHighlight);
             ctx.fillStyle = iceGradient;
-            ctx.fillRect(0, groundY - 100, canvas.width, CONFIG.groundHeight + 100);
+            ctx.fillRect(0, groundY - 80, canvas.width, CONFIG.groundHeight + 80);
 
-            // Subtle ice texture lines
-            ctx.strokeStyle = 'rgba(200, 215, 230, 0.3)';
+            // Ice lines
+            ctx.strokeStyle = 'rgba(200, 215, 230, 0.25)';
             ctx.lineWidth = 1;
-            for (let i = 0; i < 8; i++) {
-                const y = groundY - 80 + i * 15 + Math.sin(frameCount * 0.01 + i) * 2;
+            for (let i = 0; i < 6; i++) {
+                const y = groundY - 60 + i * 12;
                 ctx.beginPath();
                 ctx.moveTo(0, y);
-                ctx.lineTo(canvas.width, y + 5);
+                ctx.lineTo(canvas.width, y + 3);
                 ctx.stroke();
             }
-
-            // Ice edge highlight
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(0, groundY);
-            ctx.lineTo(canvas.width, groundY);
-            ctx.stroke();
         }
 
-        function drawPenguin(x, y) {
+        function drawPenguin(x, y, sleeping) {
             // Shadow
             ctx.fillStyle = 'rgba(60, 80, 100, 0.2)';
             ctx.beginPath();
-            ctx.ellipse(x + 22, y + 53, 16, 5, 0, 0, Math.PI * 2);
+            ctx.ellipse(x + 20, y + 48, 14, 4, 0, 0, Math.PI * 2);
             ctx.fill();
+
+            if (sleeping) {
+                // Sleeping penguin (lying down)
+                ctx.fillStyle = COLORS.penguin;
+                ctx.beginPath();
+                ctx.ellipse(x + 25, y + 42, 22, 12, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = COLORS.penguinBelly;
+                ctx.beginPath();
+                ctx.ellipse(x + 25, y + 44, 14, 8, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Zzz
+                ctx.fillStyle = '#5A7A94';
+                ctx.font = '12px Georgia';
+                ctx.fillText('z z z', x + 35, y + 25);
+                return;
+            }
 
             // Body
             ctx.fillStyle = COLORS.penguin;
             ctx.beginPath();
-            ctx.ellipse(x + 22, y + 32, 16, 22, 0, 0, Math.PI * 2);
+            ctx.ellipse(x + 20, y + 28, 14, 20, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            // White belly
+            // Belly
             ctx.fillStyle = COLORS.penguinBelly;
             ctx.beginPath();
-            ctx.ellipse(x + 22, y + 35, 10, 16, 0, 0, Math.PI * 2);
+            ctx.ellipse(x + 20, y + 30, 9, 14, 0, 0, Math.PI * 2);
             ctx.fill();
 
             // Head
             ctx.fillStyle = COLORS.penguin;
             ctx.beginPath();
-            ctx.arc(x + 22, y + 10, 12, 0, Math.PI * 2);
+            ctx.arc(x + 20, y + 9, 11, 0, Math.PI * 2);
             ctx.fill();
 
             // Eyes
             ctx.fillStyle = '#fff';
             ctx.beginPath();
-            ctx.arc(x + 17, y + 8, 4, 0, Math.PI * 2);
-            ctx.arc(x + 27, y + 8, 4, 0, Math.PI * 2);
+            ctx.arc(x + 16, y + 7, 3.5, 0, Math.PI * 2);
+            ctx.arc(x + 24, y + 7, 3.5, 0, Math.PI * 2);
             ctx.fill();
 
-            // Pupils
+            // Pupils - look down when low energy
+            const pupilOffset = energy < 30 ? 1.5 : 0.5;
             ctx.fillStyle = COLORS.penguin;
             ctx.beginPath();
-            ctx.arc(x + 18, y + 8, 1.5, 0, Math.PI * 2);
-            ctx.arc(x + 28, y + 8, 1.5, 0, Math.PI * 2);
+            ctx.arc(x + 17, y + 7 + pupilOffset, 1.5, 0, Math.PI * 2);
+            ctx.arc(x + 25, y + 7 + pupilOffset, 1.5, 0, Math.PI * 2);
             ctx.fill();
 
             // Beak
             ctx.fillStyle = '#D4956A';
             ctx.beginPath();
-            ctx.moveTo(x + 22, y + 12);
-            ctx.lineTo(x + 28, y + 15);
-            ctx.lineTo(x + 22, y + 18);
+            ctx.moveTo(x + 20, y + 11);
+            ctx.lineTo(x + 25, y + 14);
+            ctx.lineTo(x + 20, y + 16);
             ctx.closePath();
             ctx.fill();
 
             // Feet
             ctx.fillStyle = '#D4956A';
             ctx.beginPath();
-            ctx.ellipse(x + 16, y + 53, 6, 3, -0.2, 0, Math.PI * 2);
-            ctx.ellipse(x + 28, y + 53, 6, 3, 0.2, 0, Math.PI * 2);
+            ctx.ellipse(x + 14, y + 48, 5, 2.5, -0.2, 0, Math.PI * 2);
+            ctx.ellipse(x + 26, y + 48, 5, 2.5, 0.2, 0, Math.PI * 2);
             ctx.fill();
 
             // Wings
             ctx.fillStyle = COLORS.penguin;
             ctx.beginPath();
-            ctx.ellipse(x + 6, y + 30, 5, 12, -0.2, 0, Math.PI * 2);
-            ctx.ellipse(x + 38, y + 30, 5, 12, 0.2, 0, Math.PI * 2);
+            ctx.ellipse(x + 6, y + 26, 4, 10, -0.2, 0, Math.PI * 2);
+            ctx.ellipse(x + 34, y + 26, 4, 10, 0.2, 0, Math.PI * 2);
             ctx.fill();
         }
 
         function drawFriendPenguin(x, y) {
-            const scale = 0.75;
+            const s = 0.7;
 
-            // Shadow
             ctx.fillStyle = 'rgba(60, 80, 100, 0.15)';
             ctx.beginPath();
-            ctx.ellipse(x + 17, y + 43, 12 * scale, 4 * scale, 0, 0, Math.PI * 2);
+            ctx.ellipse(x + 15, y + 38, 10 * s, 3 * s, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            // Body
             ctx.fillStyle = '#2D3A4A';
             ctx.beginPath();
-            ctx.ellipse(x + 17, y + 28, 14 * scale, 18 * scale, 0, 0, Math.PI * 2);
+            ctx.ellipse(x + 15, y + 24, 12 * s, 16 * s, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            // Belly
             ctx.fillStyle = COLORS.penguinBelly;
             ctx.beginPath();
-            ctx.ellipse(x + 17, y + 30, 9 * scale, 13 * scale, 0, 0, Math.PI * 2);
+            ctx.ellipse(x + 15, y + 26, 8 * s, 11 * s, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            // Head
             ctx.fillStyle = '#2D3A4A';
             ctx.beginPath();
-            ctx.arc(x + 17, y + 10, 10 * scale, 0, Math.PI * 2);
+            ctx.arc(x + 15, y + 9, 9 * s, 0, Math.PI * 2);
             ctx.fill();
 
-            // Eyes
             ctx.fillStyle = '#fff';
             ctx.beginPath();
-            ctx.arc(x + 14, y + 8, 3 * scale, 0, Math.PI * 2);
-            ctx.arc(x + 20, y + 8, 3 * scale, 0, Math.PI * 2);
+            ctx.arc(x + 12, y + 7, 3 * s, 0, Math.PI * 2);
+            ctx.arc(x + 18, y + 7, 3 * s, 0, Math.PI * 2);
             ctx.fill();
 
-            // Pupils looking at player
-            ctx.fillStyle = '#2D3A4A';
-            ctx.beginPath();
-            ctx.arc(x + 13, y + 8, 1.5 * scale, 0, Math.PI * 2);
-            ctx.arc(x + 19, y + 8, 1.5 * scale, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Beak
             ctx.fillStyle = '#C48560';
             ctx.beginPath();
-            ctx.moveTo(x + 17, y + 11);
-            ctx.lineTo(x + 22, y + 14);
-            ctx.lineTo(x + 17, y + 16);
+            ctx.moveTo(x + 15, y + 10);
+            ctx.lineTo(x + 19, y + 12);
+            ctx.lineTo(x + 15, y + 14);
             ctx.closePath();
             ctx.fill();
 
-            // Small heart
-            ctx.fillStyle = 'rgba(180, 140, 160, 0.7)';
-            drawHeart(x + 14, y - 8, 6);
+            // Heart
+            ctx.fillStyle = 'rgba(180, 140, 160, 0.8)';
+            drawHeart(x + 12, y - 5, 5);
         }
 
         function drawHeart(x, y, size) {
@@ -1149,100 +1494,60 @@
         }
 
         function drawFish(x, y) {
-            // Fish body - silvery blue
             ctx.fillStyle = '#7A9CB8';
             ctx.beginPath();
-            ctx.ellipse(x + 14, y + 9, 11, 7, 0, 0, Math.PI * 2);
+            ctx.ellipse(x + 12, y + 8, 10, 6, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            // Tail
             ctx.beginPath();
-            ctx.moveTo(x + 3, y + 9);
+            ctx.moveTo(x + 2, y + 8);
             ctx.lineTo(x - 4, y + 2);
-            ctx.lineTo(x - 4, y + 16);
+            ctx.lineTo(x - 4, y + 14);
             ctx.closePath();
             ctx.fill();
 
-            // Highlight
             ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
             ctx.beginPath();
-            ctx.ellipse(x + 12, y + 6, 5, 3, -0.2, 0, Math.PI * 2);
+            ctx.ellipse(x + 10, y + 5, 4, 2.5, -0.2, 0, Math.PI * 2);
             ctx.fill();
 
-            // Eye
             ctx.fillStyle = '#2D3A4A';
             ctx.beginPath();
-            ctx.arc(x + 19, y + 7, 1.5, 0, Math.PI * 2);
+            ctx.arc(x + 17, y + 6, 1.5, 0, Math.PI * 2);
             ctx.fill();
         }
 
         function drawObstacle(obs) {
-            switch(obs.type) {
-                case 'ice_chunk':
-                    // Ice chunk - crystalline appearance
-                    ctx.fillStyle = COLORS.iceLight;
-                    ctx.beginPath();
-                    ctx.moveTo(obs.x + obs.width * 0.5, obs.y);
-                    ctx.lineTo(obs.x + obs.width * 0.85, obs.y + obs.height * 0.4);
-                    ctx.lineTo(obs.x + obs.width, obs.y + obs.height);
-                    ctx.lineTo(obs.x, obs.y + obs.height);
-                    ctx.lineTo(obs.x + obs.width * 0.15, obs.y + obs.height * 0.5);
-                    ctx.closePath();
-                    ctx.fill();
+            if (obs.type === 'ice_chunk') {
+                ctx.fillStyle = COLORS.iceLight;
+                ctx.beginPath();
+                ctx.moveTo(obs.x + obs.width * 0.5, obs.y);
+                ctx.lineTo(obs.x + obs.width * 0.85, obs.y + obs.height * 0.4);
+                ctx.lineTo(obs.x + obs.width, obs.y + obs.height);
+                ctx.lineTo(obs.x, obs.y + obs.height);
+                ctx.lineTo(obs.x + obs.width * 0.15, obs.y + obs.height * 0.5);
+                ctx.closePath();
+                ctx.fill();
 
-                    // Highlight
-                    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-                    ctx.beginPath();
-                    ctx.moveTo(obs.x + obs.width * 0.4, obs.y + obs.height * 0.15);
-                    ctx.lineTo(obs.x + obs.width * 0.5, obs.y + obs.height * 0.5);
-                    ctx.lineTo(obs.x + obs.width * 0.3, obs.y + obs.height * 0.55);
-                    ctx.closePath();
-                    ctx.fill();
-                    break;
-
-                case 'snow_mound':
-                    // Snow mound - soft curves
-                    ctx.fillStyle = COLORS.iceLight;
-                    ctx.beginPath();
-                    ctx.moveTo(obs.x, obs.y + obs.height);
-                    ctx.quadraticCurveTo(obs.x + obs.width * 0.25, obs.y, obs.x + obs.width * 0.5, obs.y + obs.height * 0.2);
-                    ctx.quadraticCurveTo(obs.x + obs.width * 0.75, obs.y - obs.height * 0.1, obs.x + obs.width, obs.y + obs.height);
-                    ctx.closePath();
-                    ctx.fill();
-
-                    // Snow highlight
-                    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-                    ctx.beginPath();
-                    ctx.ellipse(obs.x + obs.width * 0.6, obs.y + obs.height * 0.35, obs.width * 0.15, obs.height * 0.15, 0, 0, Math.PI * 2);
-                    ctx.fill();
-                    break;
-
-                case 'rock':
-                    // Rock - darker, solid
-                    ctx.fillStyle = '#7A8B9C';
-                    ctx.beginPath();
-                    ctx.moveTo(obs.x + 5, obs.y + obs.height);
-                    ctx.lineTo(obs.x, obs.y + obs.height * 0.5);
-                    ctx.lineTo(obs.x + 8, obs.y);
-                    ctx.lineTo(obs.x + 25, obs.y + 3);
-                    ctx.lineTo(obs.x + obs.width, obs.y + obs.height * 0.4);
-                    ctx.lineTo(obs.x + obs.width - 3, obs.y + obs.height);
-                    ctx.closePath();
-                    ctx.fill();
-
-                    // Rock highlight
-                    ctx.fillStyle = '#8B9CAD';
-                    ctx.beginPath();
-                    ctx.moveTo(obs.x + 10, obs.y + 4);
-                    ctx.lineTo(obs.x + 18, obs.y + obs.height * 0.35);
-                    ctx.lineTo(obs.x + 12, obs.y + obs.height * 0.45);
-                    ctx.closePath();
-                    ctx.fill();
-                    break;
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.beginPath();
+                ctx.moveTo(obs.x + obs.width * 0.4, obs.y + obs.height * 0.15);
+                ctx.lineTo(obs.x + obs.width * 0.5, obs.y + obs.height * 0.5);
+                ctx.lineTo(obs.x + obs.width * 0.3, obs.y + obs.height * 0.55);
+                ctx.closePath();
+                ctx.fill();
+            } else {
+                ctx.fillStyle = COLORS.iceLight;
+                ctx.beginPath();
+                ctx.moveTo(obs.x, obs.y + obs.height);
+                ctx.quadraticCurveTo(obs.x + obs.width * 0.25, obs.y, obs.x + obs.width * 0.5, obs.y + obs.height * 0.2);
+                ctx.quadraticCurveTo(obs.x + obs.width * 0.75, obs.y - obs.height * 0.1, obs.x + obs.width, obs.y + obs.height);
+                ctx.closePath();
+                ctx.fill();
             }
         }
 
-        // Start when page loads
+        // Start
         window.onload = init;
     </script>
 </body>

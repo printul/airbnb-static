@@ -1,66 +1,93 @@
 # Lonely Penguin
 
-*Every journey begins with a single step across the ice.*
+*75 kilometers to the mountains. Keep hope alive.*
 
-A contemplative browser game where you guide a small penguin across an endless icy landscape, or simply sit with them and reflect on life's big questions.
+A philosophical browser game where you guide a lonely penguin across the vast Antarctic ice, balancing hope and energy to reach the distant mountains.
 
-## Two Ways to Experience
+## The Goal
 
-### Begin Journey
-An endless runner where you help the penguin traverse the beautiful Antarctic, collect fish, and make meaningful connections with other penguins along the way.
+Travel **75 kilometers** to reach the mountains on the horizon. But this isn't just about jumping over obstacles - it's about maintaining the penguin's spirit through encouragement and finding sustenance along the way.
 
-### Sit & Reflect
-Have a warm, thoughtful conversation with a wise little penguin who finds joy in life's small moments and meaning in the journey itself.
+## Game Mechanics
 
-## Play
+### The Gauges
 
-Open `index.html` in any browser.
+| Gauge | What It Does |
+|-------|--------------|
+| **Distance** | Track progress toward the 75km goal. Mountains grow closer as you travel. |
+| **Hope** | Naturally decays over time. Restored by sending encouraging messages and meeting friend penguins. |
+| **Energy** | Decays slowly, but rapidly when hope hits zero. Restored by collecting fish. |
+| **Speed** | Determined by hope and energy levels. Higher stats = faster travel. |
 
-**Controls:**
-- **Space / Click / Tap** - Jump (double-jump enabled)
-- **T** - Open reflection mode
-- **Enter** - Send message (in chat)
+### The Balance
 
-## The Penguin's Wisdom
+- **Hope decays naturally** - The journey is long and lonely
+- **Energy decays slowly** - Walking is tiring
+- **When hope hits 0** - Energy drains rapidly (despair is exhausting)
+- **When energy hits 0** - The penguin needs to rest (game over)
 
-The penguin speaks of hope, connection, and finding beauty in small moments:
+### How to Restore
 
-- *"Being alone taught me to enjoy my own company. That's a gift, I think."*
-- *"Every friend I've made started as a stranger on the ice. That gives me hope about everyone I haven't met yet."*
-- *"Hope isn't naive - it's brave. It's saying 'yes' to tomorrow before you know what it holds."*
-- *"I slide on my belly for fun. Life should include more belly-sliding, metaphorically speaking."*
+- **Collect fish** → +15 Energy
+- **Send encouraging words** → +20 Hope
+- **Meet friend penguins** → +10 Hope
+- **Hit obstacles** → -15 Hope, -10 Energy
 
-## Aesthetic
+## Controls
 
-Inspired by the serene beauty of Antarctic landscapes - soft blue-grays, misty mountains, endless ice fields. The color palette evokes calm and contemplation rather than cold and isolation.
+| Key | Action |
+|-----|--------|
+| **SPACE** | Jump (double-jump enabled) |
+| **ENTER** | Open chat to encourage the penguin |
+| **ESC** | Close chat |
+| **Click/Tap** | Jump (mobile friendly) |
 
-## Features
+## Encouraging the Penguin
 
-- Layered parallax mountains with atmospheric depth
-- Soft, muted color palette inspired by Antarctic photography
-- Positive, hopeful philosophical dialogue
-- Encouraging messages on rest/retry
-- Smooth gameplay with gentle difficulty curve
-- High score tracking
-- Mobile-friendly
+Press ENTER during gameplay to send a message. The penguin responds to encouraging words!
 
-## Philosophy
+**Words that boost hope:**
+- Positive phrases: "you can do it", "keep going", "don't give up"
+- Encouraging words: "amazing", "wonderful", "brave", "strong"
+- Emotional support: "I believe in you", "you're not alone", "I'm with you"
+- Exclamations: "Yes!", "Go!", "Woohoo!"
 
-This isn't a game about loneliness as sadness. It's about:
-- Finding peace in solitude
-- The joy of unexpected connections
-- Appreciating the journey, not just the destination
-- Simple pleasures (fish, friends, a good waddle)
+**Example encouraging messages:**
+- "You're doing great!"
+- "Keep going, the mountains are getting closer!"
+- "I believe in you!"
+- "You're so brave!"
 
-*"Sometimes the longest journeys lead us back to ourselves."*
+## Leaderboard
 
-## Technical
+- Enter your name when the journey ends
+- **Top 20** journeys are displayed visually
+- **All journeys** are tracked and counted
+- Scores ranked by distance traveled
+- Saved locally in your browser
+
+## Win Condition
+
+Reach 75 kilometers to complete the journey. The mountains grow visibly closer as you progress!
+
+## Technical Details
 
 - Pure HTML5 Canvas, CSS3, JavaScript
-- No dependencies
-- Single-file deployment
-- Works everywhere
+- No external dependencies
+- Single HTML file
+- localStorage for leaderboard persistence
+- Mobile responsive
+
+## The Philosophy
+
+This game explores:
+- The importance of hope in long journeys
+- How encouragement from others sustains us
+- The connection between mental and physical energy
+- Finding meaning in reaching toward distant goals
+
+*"The mountains wait. Hope carries you there."*
 
 ## License
 
-MIT - Share the journey.
+MIT - Keep hope alive, share the journey.
