@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lonely Penguin - Help the penguin find friends!</title>
+    <title>Lonely Penguin - A philosophical journey</title>
     <style>
         * {
             margin: 0;
@@ -20,7 +20,7 @@
             justify-content: center;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #fff;
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
         h1 {
@@ -34,6 +34,7 @@
             font-size: 1rem;
             margin-bottom: 20px;
             opacity: 0.8;
+            font-style: italic;
         }
 
         #gameContainer {
@@ -66,7 +67,7 @@
             border-radius: 20px;
         }
 
-        #startScreen, #gameOverScreen {
+        #startScreen, #gameOverScreen, #talkScreen {
             position: absolute;
             top: 0;
             left: 0;
@@ -80,7 +81,7 @@
             border-radius: 10px;
         }
 
-        #startScreen h2, #gameOverScreen h2 {
+        #startScreen h2, #gameOverScreen h2, #talkScreen h2 {
             font-size: 2rem;
             margin-bottom: 20px;
             color: #7ec8e3;
@@ -106,12 +107,26 @@
             color: #fff;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
-            margin-top: 10px;
+            margin: 8px;
         }
 
         .btn:hover {
             transform: scale(1.05);
             box-shadow: 0 5px 20px rgba(126, 200, 227, 0.5);
+        }
+
+        .btn-talk {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+        }
+
+        .btn-talk:hover {
+            box-shadow: 0 5px 20px rgba(155, 89, 182, 0.5);
+        }
+
+        .btn-back {
+            background: linear-gradient(135deg, #636e72, #4a5568);
+            padding: 10px 25px;
+            font-size: 1rem;
         }
 
         .instructions {
@@ -123,7 +138,8 @@
 
         .controls {
             margin-top: 15px;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
+            opacity: 0.7;
         }
 
         footer {
@@ -136,6 +152,121 @@
             display: none !important;
         }
 
+        /* Talk/Chat Interface */
+        #talkScreen {
+            padding: 20px;
+            justify-content: flex-start;
+            padding-top: 40px;
+        }
+
+        #chatContainer {
+            width: 90%;
+            max-width: 700px;
+            height: 220px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            padding: 15px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            margin: 8px 0;
+            padding: 10px 15px;
+            border-radius: 15px;
+            max-width: 80%;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .penguin-message {
+            background: linear-gradient(135deg, #2d3436, #636e72);
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+
+        .penguin-message::before {
+            content: "🐧 ";
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #5ba3c6, #7ec8e3);
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+
+        #chatInput {
+            width: 90%;
+            max-width: 700px;
+            display: flex;
+            gap: 10px;
+        }
+
+        #userInput {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        #userInput::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+
+        #userInput:focus {
+            background: rgba(255,255,255,0.15);
+        }
+
+        #sendBtn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            border: none;
+            border-radius: 25px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s;
+        }
+
+        #sendBtn:hover {
+            transform: scale(1.05);
+        }
+
+        .thinking {
+            opacity: 0.7;
+            font-style: italic;
+        }
+
+        .thinking::after {
+            content: '...';
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        .philosophical-quote {
+            font-style: italic;
+            opacity: 0.8;
+            margin-top: 10px;
+            font-size: 0.95rem;
+            text-align: center;
+            max-width: 500px;
+        }
+
         @media (max-width: 850px) {
             h1 {
                 font-size: 1.8rem;
@@ -143,17 +274,20 @@
             #gameCanvas {
                 max-width: 100vw;
             }
+            #chatContainer {
+                height: 180px;
+            }
         }
     </style>
 </head>
 <body>
     <h1>Lonely Penguin</h1>
-    <p class="subtitle">Help the penguin find friends in the Arctic!</p>
+    <p class="subtitle">"In the vast whiteness, I found myself... and lost myself."</p>
 
     <div id="gameContainer">
         <canvas id="gameCanvas" width="800" height="400"></canvas>
 
-        <div id="ui">
+        <div id="ui" class="hidden">
             <div id="scoreDisplay">Score: 0</div>
             <div id="lonelinessDisplay">Friends: 0</div>
             <div id="highScoreDisplay">Best: 0</div>
@@ -162,25 +296,227 @@
         <div id="startScreen">
             <h2>Lonely Penguin</h2>
             <p class="instructions">
-                A little penguin is all alone in the Arctic.<br>
-                Help it collect fish and find friends!
+                A little penguin stands alone in the Arctic.<br>
+                What would you like to do?
             </p>
-            <p class="controls">Press SPACE or TAP to jump</p>
-            <button class="btn" id="startBtn">Start Game</button>
+            <div style="display: flex; flex-direction: column; align-items: center; margin-top: 20px;">
+                <button class="btn" id="startBtn">Play Game</button>
+                <button class="btn btn-talk" id="talkBtn">Talk to Penguin</button>
+            </div>
+            <p class="controls">SPACE to jump | T to talk</p>
         </div>
 
         <div id="gameOverScreen" class="hidden">
-            <h2>Game Over!</h2>
-            <p class="finalScore">Score: <span id="finalScore">0</span></p>
-            <p class="highScore">High Score: <span id="finalHighScore">0</span></p>
-            <p>Friends Found: <span id="friendsFound">0</span></p>
-            <button class="btn" id="restartBtn">Play Again</button>
+            <h2>The Journey Ends...</h2>
+            <p class="finalScore">Distance traveled: <span id="finalScore">0</span></p>
+            <p class="highScore">Longest journey: <span id="finalHighScore">0</span></p>
+            <p>Connections made: <span id="friendsFound">0</span></p>
+            <p class="philosophical-quote" id="deathQuote"></p>
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button class="btn" id="restartBtn">Try Again</button>
+                <button class="btn btn-talk" id="talkAfterBtn">Reflect</button>
+            </div>
+        </div>
+
+        <div id="talkScreen" class="hidden">
+            <h2>A Moment of Reflection</h2>
+            <div id="chatContainer"></div>
+            <div id="chatInput">
+                <input type="text" id="userInput" placeholder="Say something to the penguin..." maxlength="200">
+                <button id="sendBtn">Send</button>
+            </div>
+            <button class="btn btn-back" id="backBtn" style="margin-top: 15px;">Back</button>
         </div>
     </div>
 
-    <footer>Press SPACE or click/tap to jump over obstacles!</footer>
+    <footer>A meditation on existence, friendship, and fish.</footer>
 
     <script>
+        // Philosophical Penguin Dialogue System
+        const PENGUIN_THOUGHTS = {
+            greetings: [
+                "Oh... hello. I didn't expect anyone to come talk to me out here.",
+                "You came all this way just to speak with me? How... unexpected.",
+                "The ice reflects everything except what I want to see. But please, sit.",
+                "*looks up slowly* Another soul wandering through the void?",
+                "Welcome to my corner of the infinite white. It's not much, but it's honest."
+            ],
+            loneliness: [
+                "Sometimes I wonder if the other penguins left, or if I was never really with them to begin with.",
+                "The worst part of loneliness isn't being alone. It's forgetting what togetherness felt like.",
+                "I used to count the days. Now I just count the snowflakes. There are always more snowflakes.",
+                "They say penguins huddle for warmth. I've been cold for so long I've forgotten what warmth means.",
+                "Every penguin I meet eventually walks away. Maybe I'm meant to be a waypoint, not a destination.",
+                "The silence here is so loud. Do you hear it too?"
+            ],
+            existence: [
+                "Why do we waddle forward? Is there a destination, or just more ice?",
+                "I've been thinking... if a penguin contemplates existence on an ice floe, and no one is around, does the thought exist?",
+                "The horizon never gets closer, no matter how far I walk. Perhaps that's the point.",
+                "We're all just temporary arrangements of matter, briefly aware of the cold.",
+                "I exist, therefore I... wait, do I? What proof do I have besides this persistent sense of being?",
+                "The ice will melt someday. And what was the point of standing on it?",
+                "Each fish I eat becomes part of me. Am I still me? Was I ever?"
+            ],
+            meaning: [
+                "I used to think finding friends would fill the emptiness. Now I'm not sure the emptiness is meant to be filled.",
+                "Perhaps meaning isn't found. Perhaps it's just something we tell ourselves while we wait for the inevitable.",
+                "The fish don't wonder about meaning. Sometimes I envy them. Then I eat them. Then I feel guilty.",
+                "What if the search for meaning IS the meaning? ...No, that can't be right. That's too convenient.",
+                "I've decided that the meaning of life is to ask about the meaning of life. It's recursive, like my despair.",
+                "Maybe we're not supposed to find meaning. Maybe we're supposed to create it. But out of what? Snow?"
+            ],
+            friendship: [
+                "I met another penguin once. We stood together for a while. Then the ice cracked and we drifted apart. Literally.",
+                "Friendship is just two beings agreeing to be lonely together. It's beautiful, in a way.",
+                "I wonder if my friends think about me. I wonder if I have friends. I wonder if 'friends' is just a word we made up.",
+                "The fish are my friends. Brief friends. Very brief. Delicious friends.",
+                "Connection is terrifying. You open yourself up just to watch the other person walk away across the ice.",
+                "Perhaps the friends were the penguins we imagined along the way."
+            ],
+            hope: [
+                "Sometimes the aurora appears, and I remember that beauty exists. Then it fades, and I remember that nothing lasts.",
+                "Hope is a fish you can see under the ice but never quite catch.",
+                "I saw a flower once. Frozen in the ice. Still beautiful. Still dead. Still hopeful, somehow.",
+                "Tomorrow the sun might shine. Or it might not. But it will rise. That's... something.",
+                "Every ending is a beginning, they say. I'm still waiting for my beginning to begin.",
+                "The ice melts. New ice forms. Maybe that's hope. Maybe that's just thermodynamics."
+            ],
+            absurd: [
+                "I am a flightless bird who lives on ice and eats fish. The universe has a strange sense of humor.",
+                "Imagine being designed for swimming but spending most of your time standing around. That's my life.",
+                "The humans put us in zoos and call it 'conservation.' We stand on fake ice and contemplate fake existence.",
+                "I just realized I've been talking to my own reflection. Again. At least we agree on things.",
+                "Why do I even have wings? Just to remind me of what I can't do?",
+                "Sometimes I slide on my belly just to feel something. The void judges me, but the void judges everyone."
+            ],
+            fish: [
+                "Fish don't have to think about any of this. They just swim until they don't. Peak existence.",
+                "I eat fish to survive. Fish eat smaller things. It's just consumption all the way down.",
+                "The best fish is the fish you're about to catch. Once caught, it's just... fish.",
+                "I named a fish once. Harold. We had a moment. Then I got hungry.",
+                "Fish are friends. Fish are food. Fish are the fundamental contradiction of penguin existence."
+            ],
+            death: [
+                "Every game ends eventually. Just like everything else.",
+                "The ice doesn't care how far we travel. It receives us all the same.",
+                "In the end, we return to the cold we came from.",
+                "Another journey ends. But endings are just pauses between attempts.",
+                "The obstacle won. This time. The void is patient.",
+                "We fall. We rise. We fall again. That's the rhythm of existence."
+            ],
+            default: [
+                "Hmm... *stares into the distance* ...I'm not sure how to respond to that.",
+                "The wind carries your words away. Perhaps that's for the best.",
+                "I hear you. I'm not sure I understand. But I hear you.",
+                "*contemplates silently*",
+                "That's an interesting thought. I'll add it to my collection of things to ponder at 3 AM.",
+                "Words are strange, aren't they? Just sounds we agree have meaning.",
+                "The ice has no answers. Neither do I, apparently."
+            ]
+        };
+
+        const GAME_OVER_QUOTES = [
+            "\"The obstacle is the path.\" - Zen proverb, probably about icebergs",
+            "\"To live is to suffer. To waddle is to find meaning in the suffering.\"",
+            "\"In the middle of the ice, I found myself in a dark wood.\" - Dante, if he were a penguin",
+            "\"The only way out is through. Or over. Jumping helps.\"",
+            "\"We are all alone, born alone, die alone. But we can slide together.\"",
+            "\"Life is what happens while you're busy dodging snowmen.\"",
+            "\"The journey of a thousand miles begins with a single waddle.\"",
+            "\"I think, therefore I am. I slip, therefore I restart.\""
+        ];
+
+        // Keyword detection for contextual responses
+        function detectTopic(message) {
+            const lower = message.toLowerCase();
+            if (/\b(hi|hello|hey|greetings|sup)\b/.test(lower)) return 'greetings';
+            if (/\b(lonely|alone|solitude|isolated|nobody|no one)\b/.test(lower)) return 'loneliness';
+            if (/\b(exist|reality|real|am i|consciousness|aware|being)\b/.test(lower)) return 'existence';
+            if (/\b(meaning|purpose|why|point|reason|matter)\b/.test(lower)) return 'meaning';
+            if (/\b(friend|companion|together|relationship|love|connection)\b/.test(lower)) return 'friendship';
+            if (/\b(hope|future|better|tomorrow|dream|wish)\b/.test(lower)) return 'hope';
+            if (/\b(absurd|weird|strange|funny|joke|humor|ironic)\b/.test(lower)) return 'absurd';
+            if (/\b(fish|eat|food|hungry|swim)\b/.test(lower)) return 'fish';
+            if (/\b(death|die|end|over|dead|dying)\b/.test(lower)) return 'death';
+            return 'default';
+        }
+
+        function getPenguinResponse(userMessage) {
+            const topic = detectTopic(userMessage);
+            const responses = PENGUIN_THOUGHTS[topic];
+            return responses[Math.floor(Math.random() * responses.length)];
+        }
+
+        // Chat functionality
+        let chatHistory = [];
+
+        function addMessage(text, isUser) {
+            const chatContainer = document.getElementById('chatContainer');
+            const message = document.createElement('div');
+            message.className = `message ${isUser ? 'user-message' : 'penguin-message'}`;
+            message.textContent = text;
+            chatContainer.appendChild(message);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            chatHistory.push({ text, isUser });
+        }
+
+        function showThinking() {
+            const chatContainer = document.getElementById('chatContainer');
+            const thinking = document.createElement('div');
+            thinking.className = 'message penguin-message thinking';
+            thinking.id = 'thinkingIndicator';
+            thinking.textContent = 'pondering';
+            chatContainer.appendChild(thinking);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function hideThinking() {
+            const thinking = document.getElementById('thinkingIndicator');
+            if (thinking) thinking.remove();
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('userInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            addMessage(text, true);
+            input.value = '';
+
+            showThinking();
+
+            // Simulate penguin thinking
+            setTimeout(() => {
+                hideThinking();
+                const response = getPenguinResponse(text);
+                addMessage(response, false);
+            }, 1000 + Math.random() * 1500);
+        }
+
+        function openTalkScreen() {
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('gameOverScreen').classList.add('hidden');
+            document.getElementById('talkScreen').classList.remove('hidden');
+            document.getElementById('ui').classList.add('hidden');
+            gameRunning = false;
+
+            // Initial penguin greeting if chat is empty
+            if (chatHistory.length === 0) {
+                setTimeout(() => {
+                    const greeting = PENGUIN_THOUGHTS.greetings[Math.floor(Math.random() * PENGUIN_THOUGHTS.greetings.length)];
+                    addMessage(greeting, false);
+                }, 500);
+            }
+
+            document.getElementById('userInput').focus();
+        }
+
+        function closeTalkScreen() {
+            document.getElementById('talkScreen').classList.add('hidden');
+            document.getElementById('startScreen').classList.remove('hidden');
+        }
+
         // Game Configuration
         const CONFIG = {
             gravity: 0.6,
@@ -254,13 +590,27 @@
             // Event Listeners
             document.getElementById('startBtn').addEventListener('click', startGame);
             document.getElementById('restartBtn').addEventListener('click', startGame);
+            document.getElementById('talkBtn').addEventListener('click', openTalkScreen);
+            document.getElementById('talkAfterBtn').addEventListener('click', openTalkScreen);
+            document.getElementById('backBtn').addEventListener('click', closeTalkScreen);
+            document.getElementById('sendBtn').addEventListener('click', sendMessage);
+            document.getElementById('userInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendMessage();
+            });
+
             document.addEventListener('keydown', handleKeyDown);
-            canvas.addEventListener('click', handleJump);
-            canvas.addEventListener('touchstart', handleJump);
+            canvas.addEventListener('click', handleClick);
+            canvas.addEventListener('touchstart', handleClick);
 
             // Initial render
             resetPenguin();
             render();
+        }
+
+        function handleClick(e) {
+            if (e) e.preventDefault();
+            if (!document.getElementById('talkScreen').classList.contains('hidden')) return;
+            handleJump();
         }
 
         function startGame() {
@@ -278,6 +628,8 @@
 
             document.getElementById('startScreen').classList.add('hidden');
             document.getElementById('gameOverScreen').classList.add('hidden');
+            document.getElementById('talkScreen').classList.add('hidden');
+            document.getElementById('ui').classList.remove('hidden');
 
             gameLoop();
         }
@@ -292,13 +644,19 @@
         function handleKeyDown(e) {
             if (e.code === 'Space') {
                 e.preventDefault();
-                handleJump();
+                if (!document.getElementById('talkScreen').classList.contains('hidden')) return;
+                if (!gameRunning && document.getElementById('startScreen').classList.contains('hidden') === false) {
+                    startGame();
+                } else {
+                    handleJump();
+                }
+            }
+            if (e.code === 'KeyT' && !gameRunning) {
+                openTalkScreen();
             }
         }
 
-        function handleJump(e) {
-            if (e) e.preventDefault();
-
+        function handleJump() {
             if (!gameRunning) return;
 
             if (penguin.grounded || penguin.jumpCount < 2) {
@@ -525,6 +883,7 @@
             document.getElementById('finalHighScore').textContent = highScore;
             document.getElementById('friendsFound').textContent = friends;
             document.getElementById('highScoreDisplay').textContent = `Best: ${highScore}`;
+            document.getElementById('deathQuote').textContent = GAME_OVER_QUOTES[Math.floor(Math.random() * GAME_OVER_QUOTES.length)];
             document.getElementById('gameOverScreen').classList.remove('hidden');
         }
 
