@@ -76,6 +76,54 @@
             padding: 10px;
         }
 
+        .thought-box {
+            max-height: 150px;
+            overflow: hidden;
+        }
+
+        #thoughtStream {
+            font-size: 0.8rem;
+            color: #4A6B8A;
+            line-height: 1.5;
+            font-style: italic;
+            max-height: 120px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(90,122,148,0.3) transparent;
+        }
+
+        #thoughtStream::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        #thoughtStream::-webkit-scrollbar-thumb {
+            background: rgba(90,122,148,0.3);
+            border-radius: 2px;
+        }
+
+        .thought {
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(90,122,148,0.1);
+            opacity: 0;
+            animation: fadeInThought 0.5s forwards;
+        }
+
+        .thought:last-child {
+            border-bottom: none;
+        }
+
+        .thought.warning {
+            color: #E57373;
+        }
+
+        .thought.hopeful {
+            color: #81C784;
+        }
+
+        @keyframes fadeInThought {
+            to { opacity: 1; }
+        }
+
         .stat-label {
             font-size: 0.75rem;
             color: #5A7A94;
@@ -682,6 +730,11 @@
                 <div class="stat-label">Friends Met</div>
                 <div class="stat-value" id="statFriends">0</div>
             </div>
+
+            <div class="stat-group thought-box">
+                <div class="stat-label">Penguin's Thoughts</div>
+                <div id="thoughtStream"></div>
+            </div>
         </div>
     </div>
 
@@ -762,6 +815,131 @@
                 "*stumbles slightly*"
             ]
         };
+
+        // ==================== PENGUIN THOUGHTS ====================
+        const PENGUIN_THOUGHTS = {
+            philosophical: [
+                "Why do I walk toward what I cannot see?",
+                "The ice remembers every step I take...",
+                "What waits at the end of longing?",
+                "Each breath is a small rebellion against the cold.",
+                "The horizon is a promise that keeps moving.",
+                "Am I walking toward the mountains, or away from who I was?",
+                "Loneliness is just solitude without purpose.",
+                "The wind carries stories I'm too small to hear.",
+                "Perhaps the journey itself is the destination.",
+                "What does the ice think of those who cross it?",
+                "Every step forward is a step into the unknown.",
+                "The cold teaches patience. The distance teaches humility.",
+                "I wonder if the mountains know I'm coming.",
+                "Time moves differently when you're alone with your thoughts.",
+                "The stars are just frozen suns. We have more in common than I thought.",
+                "To waddle is to trust that the next step exists.",
+                "The ice doesn't judge. It simply is.",
+                "Maybe meaning isn't found. Maybe it's made.",
+                "What will I tell them when I return?",
+                "The silence out here is louder than any storm."
+            ],
+            milestone: [
+                "Farther than I've ever been...",
+                "The colony is just a memory now.",
+                "I can feel the mountains pulling me forward.",
+                "Halfway there. Or halfway gone?",
+                "The hardest steps are behind me. Or ahead?",
+                "Progress is invisible until you look back."
+            ],
+            fish: [
+                "Fuel for the journey. Thank you, ice.",
+                "A small gift from the cold.",
+                "Energy renewed. Purpose restored.",
+                "The ice provides for those who persist."
+            ],
+            friend: [
+                "Another soul on their own journey.",
+                "We understand each other without words.",
+                "Brief companionship. Lasting warmth.",
+                "Even here, connection finds a way."
+            ],
+            lowHope: [
+                "The mountains seem so far today...",
+                "Why did I leave the colony?",
+                "Doubt is heavier than snow...",
+                "I need something to believe in...",
+                "The cold reaches deeper when hope fades..."
+            ],
+            lowEnergy: [
+                "My flippers grow heavy...",
+                "Rest sounds so inviting...",
+                "Just need to find some fish...",
+                "The ice looks soft enough to sleep on...",
+                "Body tired. Spirit... trying."
+            ],
+            obstacle: [
+                "The ice tests my resolve.",
+                "Ouch. The journey leaves its marks.",
+                "Obstacles are just teachers in disguise.",
+                "Pain is temporary. Giving up is forever."
+            ],
+            encouraged: [
+                "Someone out there cares...",
+                "Words can cross any distance.",
+                "I'm not as alone as I thought.",
+                "Kindness is its own kind of warmth."
+            ]
+        };
+
+        let lastThoughtTime = 0;
+        let lastThoughtDistance = 0;
+        let thoughtCount = 0;
+
+        function addThought(text, type = 'normal') {
+            const stream = document.getElementById('thoughtStream');
+            if (!stream) return;
+
+            const thought = document.createElement('div');
+            thought.className = 'thought' + (type === 'warning' ? ' warning' : type === 'hopeful' ? ' hopeful' : '');
+            thought.textContent = text;
+
+            stream.insertBefore(thought, stream.firstChild);
+
+            // Keep only last 20 thoughts
+            while (stream.children.length > 20) {
+                stream.removeChild(stream.lastChild);
+            }
+
+            thoughtCount++;
+        }
+
+        function getRandomThought(category) {
+            const thoughts = PENGUIN_THOUGHTS[category];
+            return thoughts[Math.floor(Math.random() * thoughts.length)];
+        }
+
+        function checkForThoughts() {
+            const now = Date.now();
+
+            // Periodic philosophical thoughts (every 8-15 seconds)
+            if (now - lastThoughtTime > 8000 + Math.random() * 7000) {
+                lastThoughtTime = now;
+
+                // Check conditions for contextual thoughts
+                if (hope < 25) {
+                    addThought(getRandomThought('lowHope'), 'warning');
+                } else if (energy < 25) {
+                    addThought(getRandomThought('lowEnergy'), 'warning');
+                } else if (Math.random() < 0.7) {
+                    addThought(getRandomThought('philosophical'));
+                }
+            }
+
+            // Milestone thoughts (every ~10km)
+            if (distance - lastThoughtDistance >= 10) {
+                lastThoughtDistance = Math.floor(distance / 10) * 10;
+                setTimeout(() => {
+                    addThought(getRandomThought('milestone'), 'hopeful');
+                }, 1000);
+            }
+        }
 
         // ==================== GAME STATE ====================
         let canvas, ctx;
@@ -1030,6 +1208,14 @@
             terrainSlopes = [];
             initializeTerrain();
 
+            // Reset thoughts
+            lastThoughtTime = Date.now();
+            lastThoughtDistance = 0;
+            thoughtCount = 0;
+            const thoughtStream = document.getElementById('thoughtStream');
+            if (thoughtStream) thoughtStream.innerHTML = '';
+            addThought("The journey begins...", 'hopeful');
+
             resetPenguin();
             penguin.sleeping = false;
 
@@ -1147,6 +1333,7 @@
                 showSpeechBubble(PENGUIN_RESPONSES.encouraged[Math.floor(Math.random() * PENGUIN_RESPONSES.encouraged.length)]);
                 triggerWingFlap();
                 SoundManager.encourage();
+                addThought(getRandomThought('encouraged'), 'hopeful');
 
                 // Sparkle effect
                 for (let i = 0; i < 8; i++) {
@@ -1188,6 +1375,7 @@
             update();
             render();
             updateUI();
+            checkForThoughts();
 
             requestAnimationFrame(gameLoop);
         }
@@ -1307,6 +1495,7 @@
                     energy = Math.max(0, energy - 10);
                     showSpeechBubble("Oof! That hurt...");
                     SoundManager.hitObstacle();
+                    if (Math.random() < 0.5) addThought(getRandomThought('obstacle'), 'warning');
 
                     // Knock back effect
                     for (let i = 0; i < 5; i++) {
@@ -1334,6 +1523,7 @@
                     energy = Math.min(100, energy + CONFIG.fishEnergyBoost);
                     triggerWingFlap();
                     SoundManager.collectFish();
+                    if (Math.random() < 0.4) addThought(getRandomThought('fish'), 'hopeful');
 
                     for (let i = 0; i < 6; i++) {
                         particles.push({
@@ -1363,6 +1553,7 @@
                     showSpeechBubble("A friend! I'm not alone!");
                     triggerWingFlap();
                     SoundManager.meetFriend();
+                    addThought(getRandomThought('friend'), 'hopeful');
 
                     for (let i = 0; i < 8; i++) {
                         particles.push({
@@ -1771,9 +1962,13 @@
                 height = 30 + Math.random() * 15;
             }
 
+            // Calculate terrain height at spawn position for proper placement
+            const spawnX = canvas.width;
+            const terrainHeight = getTerrainHeightAt(spawnX + width / 2);
+
             obstacles.push({
-                x: canvas.width,
-                y: canvas.height - CONFIG.groundHeight - height,
+                x: spawnX,
+                y: canvas.height - CONFIG.groundHeight - height + terrainHeight,
                 width, height, type
             });
         }
@@ -1802,9 +1997,9 @@
             // Start with flat terrain, then generate slopes
             terrainSlopes = [];
 
-            // Generate initial terrain covering the screen
+            // Generate initial terrain covering the screen plus buffer for spawning
             let x = 0;
-            while (x < canvas.width + 200) {
+            while (x < canvas.width + 300) {
                 const segment = generateTerrainSegment(x);
                 terrainSlopes.push(segment);
                 x += segment.width;
@@ -1895,10 +2090,10 @@
             // Remove off-screen segments
             terrainSlopes = terrainSlopes.filter(seg => seg.x + seg.width > -50);
 
-            // Generate new segments at the right edge
+            // Generate new segments at the right edge (extend to 300px for object spawning)
             if (terrainSlopes.length > 0) {
                 const lastSeg = terrainSlopes[terrainSlopes.length - 1];
-                if (lastSeg.x + lastSeg.width < canvas.width + 200) {
+                if (lastSeg.x + lastSeg.width < canvas.width + 300) {
                     const newSeg = generateTerrainSegment(lastSeg.x + lastSeg.width);
                     // Connect heights for smooth transitions
                     newSeg.startHeight = lastSeg.endHeight;
