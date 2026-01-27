@@ -248,6 +248,8 @@
             background: rgba(180, 195, 210, 0.92);
             backdrop-filter: blur(8px);
             border-radius: 8px;
+            padding: 20px;
+            overflow-y: auto;
         }
 
         #startScreen h2, #gameOverScreen h2, #leaderboardScreen h2 {
@@ -534,7 +536,6 @@
             </div>
 
             <div id="startScreen">
-                <h2>The Lonely Penguin</h2>
                 <p class="instructions" style="font-style: italic; margin-bottom: 12px;">
                     "I don't know why. I just know I need to reach them."
                 </p>
@@ -823,10 +824,159 @@
             penguinBelly: '#E8EDF2'
         };
 
+        // ==================== SOUND SYSTEM ====================
+        const SoundManager = {
+            ctx: null,
+            musicGain: null,
+            sfxGain: null,
+            musicPlaying: false,
+            musicNodes: [],
+            enabled: true,
+
+            init() {
+                try {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    this.musicGain = this.ctx.createGain();
+                    this.musicGain.gain.value = 0.15;
+                    this.musicGain.connect(this.ctx.destination);
+                    this.sfxGain = this.ctx.createGain();
+                    this.sfxGain.gain.value = 0.3;
+                    this.sfxGain.connect(this.ctx.destination);
+                } catch (e) {
+                    console.log('Web Audio not supported');
+                    this.enabled = false;
+                }
+            },
+
+            resume() {
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            },
+
+            playTone(freq, duration, type = 'sine', gainNode = this.sfxGain, attack = 0.01, decay = 0.1) {
+                if (!this.enabled || !this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = type;
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0, this.ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.3, this.ctx.currentTime + attack);
+                gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(gainNode);
+                osc.start();
+                osc.stop(this.ctx.currentTime + duration);
+            },
+
+            jump() {
+                if (!this.enabled) return;
+                this.playTone(300, 0.15, 'sine');
+                setTimeout(() => this.playTone(400, 0.1, 'sine'), 50);
+            },
+
+            collectFish() {
+                if (!this.enabled) return;
+                this.playTone(523, 0.1, 'sine');
+                setTimeout(() => this.playTone(659, 0.1, 'sine'), 80);
+                setTimeout(() => this.playTone(784, 0.15, 'sine'), 160);
+            },
+
+            meetFriend() {
+                if (!this.enabled) return;
+                this.playTone(392, 0.15, 'triangle');
+                setTimeout(() => this.playTone(523, 0.15, 'triangle'), 100);
+                setTimeout(() => this.playTone(659, 0.2, 'triangle'), 200);
+            },
+
+            hitObstacle() {
+                if (!this.enabled) return;
+                this.playTone(150, 0.2, 'sawtooth');
+                this.playTone(100, 0.3, 'square');
+            },
+
+            encourage() {
+                if (!this.enabled) return;
+                const notes = [523, 587, 659, 784];
+                notes.forEach((note, i) => {
+                    setTimeout(() => this.playTone(note, 0.12, 'sine'), i * 80);
+                });
+            },
+
+            gameOver() {
+                if (!this.enabled) return;
+                this.playTone(392, 0.3, 'sine');
+                setTimeout(() => this.playTone(349, 0.3, 'sine'), 200);
+                setTimeout(() => this.playTone(330, 0.3, 'sine'), 400);
+                setTimeout(() => this.playTone(294, 0.5, 'sine'), 600);
+            },
+
+            win() {
+                if (!this.enabled) return;
+                const melody = [523, 587, 659, 784, 659, 784, 1047];
+                melody.forEach((note, i) => {
+                    setTimeout(() => this.playTone(note, 0.25, 'sine'), i * 150);
+                });
+            },
+
+            startMusic() {
+                if (!this.enabled || !this.ctx || this.musicPlaying) return;
+                this.musicPlaying = true;
+                this.playAmbientMusic();
+            },
+
+            stopMusic() {
+                this.musicPlaying = false;
+                this.musicNodes.forEach(node => {
+                    try { node.stop(); } catch(e) {}
+                });
+                this.musicNodes = [];
+            },
+
+            playAmbientMusic() {
+                if (!this.musicPlaying || !this.ctx) return;
+
+                // Ambient pad chord
+                const chords = [
+                    [261, 329, 392],  // C major
+                    [293, 369, 440],  // D major
+                    [246, 311, 369],  // B minor
+                    [220, 277, 329],  // A minor
+                ];
+
+                const playChord = (chordIndex) => {
+                    if (!this.musicPlaying) return;
+                    const chord = chords[chordIndex % chords.length];
+                    chord.forEach(freq => {
+                        const osc = this.ctx.createOscillator();
+                        const gain = this.ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.value = freq * 0.5; // Lower octave
+                        gain.gain.setValueAtTime(0, this.ctx.currentTime);
+                        gain.gain.linearRampToValueAtTime(0.08, this.ctx.currentTime + 1);
+                        gain.gain.linearRampToValueAtTime(0.05, this.ctx.currentTime + 3);
+                        gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 4);
+                        osc.connect(gain);
+                        gain.connect(this.musicGain);
+                        osc.start();
+                        osc.stop(this.ctx.currentTime + 4);
+                        this.musicNodes.push(osc);
+                    });
+
+                    setTimeout(() => playChord(chordIndex + 1), 4000);
+                };
+
+                playChord(0);
+            }
+        };
+
         // ==================== INITIALIZATION ====================
         function init() {
             canvas = document.getElementById('gameCanvas');
             ctx = canvas.getContext('2d');
+
+            // Initialize sound system
+            SoundManager.init();
 
             // Generate snowflakes
             for (let i = 0; i < 30; i++) {
@@ -882,6 +1032,10 @@
 
             resetPenguin();
             penguin.sleeping = false;
+
+            // Start audio and music
+            SoundManager.resume();
+            SoundManager.startMusic();
 
             document.getElementById('startScreen').classList.add('hidden');
             document.getElementById('gameOverScreen').classList.add('hidden');
@@ -946,6 +1100,8 @@
                 penguin.grounded = false;
                 penguin.jumpCount++;
                 energy = Math.max(0, energy - 0.5);
+                SoundManager.jump();
+                triggerWingFlap();
 
                 for (let i = 0; i < 3; i++) {
                     particles.push({
@@ -990,6 +1146,7 @@
                 hope = Math.min(100, hope + CONFIG.encouragementHopeBoost);
                 showSpeechBubble(PENGUIN_RESPONSES.encouraged[Math.floor(Math.random() * PENGUIN_RESPONSES.encouraged.length)]);
                 triggerWingFlap();
+                SoundManager.encourage();
 
                 // Sparkle effect
                 for (let i = 0; i < 8; i++) {
@@ -1105,8 +1262,19 @@
                 penguin.walkCycle += 0.12 * (currentSpeed / CONFIG.baseSpeed);
             }
 
-            // Wing flap animation - decays over time
-            if (penguin.wingFlap > 0) {
+            // Wing flap animation - continuous while in air, decays when grounded
+            if (!penguin.grounded) {
+                // Continuous flapping while airborne
+                penguin.wingFlap += 0.15 * penguin.wingFlapDir;
+                if (penguin.wingFlap >= 1) {
+                    penguin.wingFlap = 1;
+                    penguin.wingFlapDir = -1;
+                } else if (penguin.wingFlap <= 0) {
+                    penguin.wingFlap = 0;
+                    penguin.wingFlapDir = 1;
+                }
+            } else if (penguin.wingFlap > 0) {
+                // Decay when grounded (after triggered flap)
                 penguin.wingFlap -= 0.08;
                 if (penguin.wingFlap < 0) penguin.wingFlap = 0;
             }
@@ -1138,6 +1306,7 @@
                     hope = Math.max(0, hope - 15);
                     energy = Math.max(0, energy - 10);
                     showSpeechBubble("Oof! That hurt...");
+                    SoundManager.hitObstacle();
 
                     // Knock back effect
                     for (let i = 0; i < 5; i++) {
@@ -1164,6 +1333,7 @@
                 if (checkCollision(penguin, f)) {
                     energy = Math.min(100, energy + CONFIG.fishEnergyBoost);
                     triggerWingFlap();
+                    SoundManager.collectFish();
 
                     for (let i = 0; i < 6; i++) {
                         particles.push({
@@ -1192,6 +1362,7 @@
                     hope = Math.min(100, hope + CONFIG.friendHopeBoost);
                     showSpeechBubble("A friend! I'm not alone!");
                     triggerWingFlap();
+                    SoundManager.meetFriend();
 
                     for (let i = 0; i < 8; i++) {
                         particles.push({
@@ -1230,6 +1401,8 @@
         function penguinSleep() {
             penguin.sleeping = true;
             document.getElementById('sleepMessage').classList.add('visible');
+            SoundManager.gameOver();
+            SoundManager.stopMusic();
 
             setTimeout(() => {
                 gameOver();
@@ -1241,6 +1414,8 @@
             winAnimationPhase = 1;
             winAnimationTimer = 0;
             arrivalParticles = [];
+            SoundManager.win();
+            SoundManager.stopMusic();
 
             document.getElementById('distanceOverlay').classList.add('hidden');
             document.getElementById('chatHint').classList.add('hidden');
