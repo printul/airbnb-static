@@ -12,7 +12,7 @@
         }
 
         body {
-            background: linear-gradient(180deg, #7A8FA3 0%, #A3B5C4 40%, #C5D0DA 100%);
+            background: linear-gradient(180deg, #5C7A99 0%, #8AACC4 40%, #B8D0E0 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -27,8 +27,8 @@
         h1 {
             font-size: 2rem;
             margin-bottom: 5px;
-            text-shadow: 1px 1px 3px rgba(255,255,255,0.5);
-            color: #3D5A73;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.6);
+            color: #2A4560;
             font-weight: normal;
             letter-spacing: 2px;
         }
@@ -62,7 +62,7 @@
         #statsPanel {
             width: 200px;
             background: rgba(255,255,255,0.25);
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(4px);
             border-radius: 12px;
             padding: 15px;
             display: flex;
@@ -76,24 +76,32 @@
             padding: 10px;
         }
 
-        .thought-box {
-            max-height: 150px;
+        /* Thought box - top left of canvas */
+        #thoughtBox {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 200px;
+            max-height: 120px;
+            background: rgba(255,255,255,0.85);
+            border-radius: 8px;
+            padding: 8px 10px;
             overflow: hidden;
+            pointer-events: none;
         }
 
         #thoughtStream {
-            font-size: 0.8rem;
-            color: #4A6B8A;
-            line-height: 1.5;
-            font-style: italic;
-            max-height: 120px;
+            font-size: 0.75rem;
+            color: #3D5A73;
+            line-height: 1.4;
+            max-height: 104px;
             overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: rgba(90,122,148,0.3) transparent;
         }
 
         #thoughtStream::-webkit-scrollbar {
-            width: 4px;
+            width: 3px;
         }
 
         #thoughtStream::-webkit-scrollbar-thumb {
@@ -102,8 +110,8 @@
         }
 
         .thought {
-            padding: 4px 0;
-            border-bottom: 1px solid rgba(90,122,148,0.1);
+            padding: 3px 0;
+            border-bottom: 1px solid rgba(90,122,148,0.15);
             opacity: 0;
             animation: fadeInThought 0.5s forwards;
         }
@@ -113,15 +121,40 @@
         }
 
         .thought.warning {
-            color: #E57373;
+            color: #C62828;
+            font-weight: 500;
         }
 
         .thought.hopeful {
-            color: #81C784;
+            color: #2E7D32;
+            font-weight: 500;
         }
 
         @keyframes fadeInThought {
             to { opacity: 1; }
+        }
+
+        /* Pause button */
+        #pauseButton {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.85);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #3D5A73;
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        #pauseButton:hover {
+            background: rgba(255,255,255,1);
         }
 
         .stat-label {
@@ -294,7 +327,7 @@
             align-items: center;
             justify-content: center;
             background: rgba(180, 195, 210, 0.92);
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(4px);
             border-radius: 8px;
             padding: 20px;
             overflow-y: auto;
@@ -471,7 +504,7 @@
             align-items: center;
             justify-content: center;
             background: linear-gradient(180deg, rgba(129, 199, 132, 0.15) 0%, rgba(180, 195, 210, 0.95) 30%, rgba(180, 195, 210, 0.98) 100%);
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(4px);
             border-radius: 8px;
             padding: 20px;
             text-align: center;
@@ -571,7 +604,13 @@
 
             <div id="speechBubble"></div>
 
-            <div id="chatHint" class="hidden">Press ENTER to encourage the penguin</div>
+            <div id="thoughtBox">
+                <div id="thoughtStream"></div>
+            </div>
+
+            <div id="pauseButton" class="hidden">❚❚</div>
+
+            <div id="chatHint" class="hidden">Press ENTER to encourage | ESC to pause</div>
 
             <div id="gameChatContainer">
                 <input type="text" id="gameChat" placeholder="Say something encouraging..." maxlength="100">
@@ -729,11 +768,6 @@
             <div class="stat-group">
                 <div class="stat-label">Friends Met</div>
                 <div class="stat-value" id="statFriends">0</div>
-            </div>
-
-            <div class="stat-group thought-box">
-                <div class="stat-label">Penguin's Thoughts</div>
-                <div id="thoughtStream"></div>
             </div>
         </div>
     </div>
@@ -989,17 +1023,17 @@
 
         // Colors
         const COLORS = {
-            skyTop: '#7A8FA3',
-            skyMid: '#A3B5C4',
-            skyBottom: '#B8C5D0',
-            mountainFar: '#8B9CAD',
-            mountainMid: '#9AACBC',
-            mountainNear: '#AAB8C6',
-            iceShadow: '#C5D0DA',
-            iceLight: '#E8EDF2',
-            iceHighlight: '#F5F8FA',
-            penguin: '#1A1A2E',
-            penguinBelly: '#E8EDF2'
+            skyTop: '#5C7A99',
+            skyMid: '#8AACC4',
+            skyBottom: '#B8D0E0',
+            mountainFar: '#6B8099',
+            mountainMid: '#8099AD',
+            mountainNear: '#99ADC0',
+            iceShadow: '#A8BED0',
+            iceLight: '#E0EBF5',
+            iceHighlight: '#FFFFFF',
+            penguin: '#0D0D1A',
+            penguinBelly: '#F0F5FA'
         };
 
         // ==================== SOUND SYSTEM ====================
@@ -1187,6 +1221,7 @@
             document.addEventListener('keydown', handleKeyDown);
             canvas.addEventListener('click', handleClick);
             canvas.addEventListener('touchstart', handleClick);
+            document.getElementById('pauseButton').addEventListener('click', togglePause);
 
             resetPenguin();
             render();
@@ -1223,6 +1258,7 @@
             SoundManager.resume();
             SoundManager.startMusic();
 
+            gamePaused = false;
             document.getElementById('startScreen').classList.add('hidden');
             document.getElementById('gameOverScreen').classList.add('hidden');
             document.getElementById('leaderboardScreen').classList.add('hidden');
@@ -1230,6 +1266,8 @@
             document.getElementById('distanceOverlay').classList.remove('hidden');
             document.getElementById('chatHint').classList.remove('hidden');
             document.getElementById('sleepMessage').classList.remove('visible');
+            document.getElementById('pauseButton').classList.remove('hidden');
+            document.getElementById('pauseButton').textContent = '❚❚';
 
             // Reset win screen save button
             document.getElementById('winSaveScoreBtn').textContent = 'Record Journey';
@@ -1257,18 +1295,34 @@
 
         // ==================== INPUT HANDLING ====================
         function handleKeyDown(e) {
-            if (e.code === 'Space' && gameRunning && !chatOpen) {
+            if (e.code === 'Space' && gameRunning && !chatOpen && !gamePaused) {
                 e.preventDefault();
                 handleJump();
             }
 
-            if (e.code === 'Enter' && gameRunning && !penguin.sleeping) {
+            if (e.code === 'Enter' && gameRunning && !penguin.sleeping && !gamePaused) {
                 e.preventDefault();
                 toggleChat();
             }
 
-            if (e.code === 'Escape' && chatOpen) {
-                toggleChat();
+            if (e.code === 'Escape') {
+                if (chatOpen) {
+                    toggleChat();
+                } else if (gameRunning && !penguin.sleeping) {
+                    togglePause();
+                }
+            }
+        }
+
+        function togglePause() {
+            gamePaused = !gamePaused;
+            const pauseBtn = document.getElementById('pauseButton');
+            if (gamePaused) {
+                pauseBtn.textContent = '▶';
+                SoundManager.stopMusic();
+            } else {
+                pauseBtn.textContent = '❚❚';
+                SoundManager.startMusic();
             }
         }
 
@@ -1383,8 +1437,8 @@
         function update() {
             if (penguin.sleeping) return;
 
-            // Pause game while typing encouragement
-            if (chatOpen) return;
+            // Pause game while typing encouragement or paused
+            if (chatOpen || gamePaused) return;
 
             // Calculate speed based on hope and energy
             const hopeFactor = 0.5 + (hope / 200);
@@ -1611,6 +1665,7 @@
             document.getElementById('distanceOverlay').classList.add('hidden');
             document.getElementById('chatHint').classList.add('hidden');
             document.getElementById('gameChatContainer').classList.remove('active');
+            document.getElementById('pauseButton').classList.add('hidden');
 
             winAnimationLoop();
         }
@@ -1944,6 +1999,7 @@
             document.getElementById('chatHint').classList.add('hidden');
             document.getElementById('gameChatContainer').classList.remove('active');
             document.getElementById('sleepMessage').classList.remove('visible');
+            document.getElementById('pauseButton').classList.add('hidden');
             document.getElementById('gameOverScreen').classList.remove('hidden');
             document.getElementById('playerName').focus();
         }
