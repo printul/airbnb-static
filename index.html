@@ -147,22 +147,34 @@
             position: absolute;
             top: 10px;
             right: 10px;
-            width: 36px;
-            height: 36px;
-            background: rgba(255,255,255,0.85);
+            width: 40px;
+            background: rgba(255,255,255,0.7);
             border-radius: 8px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 1rem;
             color: #3D5A73;
             user-select: none;
             transition: background 0.2s;
+            padding: 6px 8px;
         }
 
         #pauseButton:hover {
-            background: rgba(255,255,255,1);
+            background: rgba(255,255,255,0.9);
+        }
+
+        .pause-icon {
+            font-size: 1rem;
+            line-height: 1;
+        }
+
+        .pause-hint {
+            font-size: 0.6rem;
+            opacity: 0.6;
+            margin-top: 2px;
+            text-transform: uppercase;
         }
 
         .stat-label {
@@ -635,9 +647,12 @@
                 <div id="thoughtStream"></div>
             </div>
 
-            <div id="pauseButton" class="hidden">❚❚</div>
+            <div id="pauseButton" class="hidden">
+                <span class="pause-icon">❚❚</span>
+                <span class="pause-hint">Esc</span>
+            </div>
 
-            <div id="chatHint" class="hidden">Press ENTER to encourage | ESC to pause</div>
+            <div id="chatHint" class="hidden">Press ENTER to talk to penguin</div>
 
             <div id="gameChatContainer">
                 <input type="text" id="gameChat" placeholder="Say something encouraging..." maxlength="100">
@@ -1153,20 +1168,23 @@
                 try {
                     this.ctx = new (window.AudioContext || window.webkitAudioContext)();
                     this.musicGain = this.ctx.createGain();
-                    this.musicGain.gain.value = 0.15;
+                    this.musicGain.gain.value = 0.25;
                     this.musicGain.connect(this.ctx.destination);
                     this.sfxGain = this.ctx.createGain();
-                    this.sfxGain.gain.value = 0.3;
+                    this.sfxGain.gain.value = 0.5;
                     this.sfxGain.connect(this.ctx.destination);
+                    console.log('Audio initialized');
                 } catch (e) {
-                    console.log('Web Audio not supported');
+                    console.log('Web Audio not supported', e);
                     this.enabled = false;
                 }
             },
 
             resume() {
                 if (this.ctx && this.ctx.state === 'suspended') {
-                    this.ctx.resume();
+                    this.ctx.resume().then(() => {
+                        console.log('Audio resumed');
+                    });
                 }
             },
 
@@ -1354,6 +1372,15 @@
             canvas.addEventListener('touchstart', handleClick);
             document.getElementById('pauseButton').addEventListener('click', togglePause);
 
+            // Resume audio on first interaction
+            const resumeAudio = () => {
+                SoundManager.resume();
+                document.removeEventListener('click', resumeAudio);
+                document.removeEventListener('keydown', resumeAudio);
+            };
+            document.addEventListener('click', resumeAudio);
+            document.addEventListener('keydown', resumeAudio);
+
             resetPenguin();
             render();
             updateLeaderboardDisplay();
@@ -1398,7 +1425,7 @@
             document.getElementById('chatHint').classList.remove('hidden');
             document.getElementById('sleepMessage').classList.remove('visible');
             document.getElementById('pauseButton').classList.remove('hidden');
-            document.getElementById('pauseButton').textContent = '❚❚';
+            document.querySelector('.pause-icon').textContent = '❚❚';
 
             // Reset win screen save button
             document.getElementById('winSaveScoreBtn').textContent = 'Record Journey';
@@ -1447,12 +1474,12 @@
 
         function togglePause() {
             gamePaused = !gamePaused;
-            const pauseBtn = document.getElementById('pauseButton');
+            const pauseIcon = document.querySelector('.pause-icon');
             if (gamePaused) {
-                pauseBtn.textContent = '▶';
+                pauseIcon.textContent = '▶';
                 SoundManager.stopMusic();
             } else {
-                pauseBtn.textContent = '❚❚';
+                pauseIcon.textContent = '❚❚';
                 SoundManager.startMusic();
             }
         }
@@ -1512,9 +1539,11 @@
 
             // Check if encouraging
             const isEncouraging = ENCOURAGING_PATTERNS.some(pattern => pattern.test(message));
+            console.log('Message:', message, 'Encouraging:', isEncouraging);
 
             if (isEncouraging) {
                 hope = Math.min(100, hope + CONFIG.encouragementHopeBoost);
+                console.log('Hope boosted to:', hope);
                 showSpeechBubble(PENGUIN_RESPONSES.encouraged[Math.floor(Math.random() * PENGUIN_RESPONSES.encouraged.length)]);
                 triggerWingFlap();
                 SoundManager.encourage();
