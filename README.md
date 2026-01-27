@@ -110,6 +110,3 @@ This game explores:
 
 *"Only by finding myself could I truly have something to give."*
 
-## License
-
-MIT - Find yourself. Share the wisdom. Keep hope alive.
