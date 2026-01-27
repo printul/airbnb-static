@@ -84,62 +84,87 @@
             padding: 10px;
         }
 
-        /* Thought box - top left of canvas */
-        #thoughtBox {
+        /* Floating thoughts - top left of canvas */
+        #floatingThoughts {
             position: absolute;
             top: 10px;
             left: 10px;
-            width: 200px;
-            max-height: 120px;
-            background: rgba(255,255,255,0.85);
-            border-radius: 8px;
-            padding: 8px 10px;
-            overflow: hidden;
+            width: 220px;
             pointer-events: none;
+            overflow: hidden;
+            height: 100px;
         }
 
-        #thoughtStream {
-            font-size: 0.75rem;
+        .floating-thought {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.95);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            padding: 2px 0;
+            animation: floatUp 8s forwards;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        .floating-thought.warning {
+            color: #FFCDD2;
+        }
+
+        .floating-thought.hopeful {
+            color: #C8E6C9;
+        }
+
+        @keyframes floatUp {
+            0% { opacity: 0; transform: translateY(0); }
+            10% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { opacity: 0; transform: translateY(-80px); }
+        }
+
+        /* Encouragement buttons below canvas */
+        #encourageButtons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            padding: 8px;
+            flex-wrap: wrap;
+            min-height: 44px;
+        }
+
+        .encourage-btn {
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            font-family: 'Georgia', serif;
+            background: rgba(255,255,255,0.8);
+            border: 2px solid rgba(90, 122, 148, 0.3);
+            border-radius: 20px;
             color: #3D5A73;
-            line-height: 1.4;
-            max-height: 104px;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(90,122,148,0.3) transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+            animation: fadeInBtn 0.5s forwards;
         }
 
-        #thoughtStream::-webkit-scrollbar {
-            width: 3px;
+        .encourage-btn:hover {
+            background: rgba(255,255,255,1);
+            border-color: rgba(90, 122, 148, 0.6);
+            transform: scale(1.05);
         }
 
-        #thoughtStream::-webkit-scrollbar-thumb {
-            background: rgba(90,122,148,0.3);
-            border-radius: 2px;
+        .encourage-btn.fading {
+            animation: fadeOutBtn 1s forwards;
         }
 
-        .thought {
-            padding: 3px 0;
-            border-bottom: 1px solid rgba(90,122,148,0.15);
-            opacity: 0;
-            animation: fadeInThought 0.5s forwards;
+        @keyframes fadeInBtn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
         }
 
-        .thought:last-child {
-            border-bottom: none;
-        }
-
-        .thought.warning {
-            color: #C62828;
-            font-weight: 500;
-        }
-
-        .thought.hopeful {
-            color: #2E7D32;
-            font-weight: 500;
-        }
-
-        @keyframes fadeInThought {
-            to { opacity: 1; }
+        @keyframes fadeOutBtn {
+            to { opacity: 0; transform: scale(0.8); }
         }
 
         /* Pause button */
@@ -235,45 +260,6 @@
             background: linear-gradient(90deg, #90A4AE, #78909C, #546E7A);
         }
 
-        /* In-game chat */
-        #gameChatContainer {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            right: 10px;
-            display: flex;
-            gap: 8px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-        }
-
-        #gameChatContainer.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        #gameChat {
-            flex: 1;
-            padding: 8px 15px;
-            border: none;
-            border-radius: 20px;
-            background: rgba(255,255,255,0.85);
-            color: #3D5A73;
-            font-size: 0.9rem;
-            outline: none;
-        }
-
-        #gameChatSend {
-            padding: 8px 18px;
-            background: linear-gradient(135deg, #5A7A94, #4A6B8A);
-            border: none;
-            border-radius: 20px;
-            color: #fff;
-            cursor: pointer;
-            font-size: 0.85rem;
-        }
-
         /* Speech bubble */
         #speechBubble {
             position: absolute;
@@ -320,19 +306,6 @@
         #distanceOverlay .goal {
             font-size: 0.7rem;
             color: #5A7A94;
-        }
-
-        /* Chat hint */
-        #chatHint {
-            position: absolute;
-            bottom: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.75rem;
-            color: rgba(61, 90, 115, 0.6);
-            background: rgba(255,255,255,0.5);
-            padding: 4px 12px;
-            border-radius: 10px;
         }
 
         /* Screens */
@@ -643,20 +616,11 @@
 
             <div id="speechBubble"></div>
 
-            <div id="thoughtBox">
-                <div id="thoughtStream"></div>
-            </div>
+            <div id="floatingThoughts"></div>
 
             <div id="pauseButton" class="hidden">
                 <span class="pause-icon">❚❚</span>
                 <span class="pause-hint">Esc</span>
-            </div>
-
-            <div id="chatHint" class="hidden">Press ENTER to talk to penguin</div>
-
-            <div id="gameChatContainer">
-                <input type="text" id="gameChat" placeholder="Say something encouraging..." maxlength="100">
-                <button id="gameChatSend">Send</button>
             </div>
 
             <div id="sleepMessage">
@@ -751,6 +715,8 @@
                     <button class="btn btn-secondary" id="winLeaderboardBtn">Leaderboard</button>
                 </div>
             </div>
+
+            <div id="encourageButtons" class="hidden"></div>
         </div>
 
         <div id="statsPanel">
@@ -1041,24 +1007,117 @@
             ]
         };
 
+        // ==================== ENCOURAGEMENT BUTTONS ====================
+        const ENCOURAGEMENT_PHRASES = [
+            "You can do it!",
+            "Keep going!",
+            "Don't give up!",
+            "You're amazing!",
+            "Stay strong!",
+            "Almost there!",
+            "I believe in you!",
+            "You're doing great!",
+            "Go go go!",
+            "Yes! Forward!",
+            "You're brave!",
+            "Keep walking!",
+            "The mountains await!",
+            "One step at a time!",
+            "You've got this!"
+        ];
+
+        let encourageButtonTimeout = null;
+        let lastEncourageTime = 0;
+
+        function showEncourageButtons() {
+            const container = document.getElementById('encourageButtons');
+            if (!container || !gameRunning || gamePaused) return;
+
+            container.innerHTML = '';
+
+            // Pick 2-3 random phrases
+            const shuffled = [...ENCOURAGEMENT_PHRASES].sort(() => Math.random() - 0.5);
+            const count = 2 + Math.floor(Math.random() * 2);
+            const phrases = shuffled.slice(0, count);
+
+            phrases.forEach(phrase => {
+                const btn = document.createElement('button');
+                btn.className = 'encourage-btn';
+                btn.textContent = phrase;
+                btn.onclick = () => sendEncouragement(phrase);
+                container.appendChild(btn);
+            });
+
+            // Timeout - buttons fade after 6 seconds
+            if (encourageButtonTimeout) clearTimeout(encourageButtonTimeout);
+            encourageButtonTimeout = setTimeout(() => {
+                const buttons = container.querySelectorAll('.encourage-btn');
+                buttons.forEach(btn => btn.classList.add('fading'));
+                setTimeout(() => {
+                    container.innerHTML = '';
+                }, 1000);
+            }, 6000);
+        }
+
+        function sendEncouragement(phrase) {
+            // Clear buttons immediately
+            const container = document.getElementById('encourageButtons');
+            if (container) container.innerHTML = '';
+            if (encourageButtonTimeout) clearTimeout(encourageButtonTimeout);
+
+            // Boost hope
+            hope = Math.min(100, hope + CONFIG.encouragementHopeBoost);
+            showSpeechBubble(PENGUIN_RESPONSES.encouraged[Math.floor(Math.random() * PENGUIN_RESPONSES.encouraged.length)]);
+            triggerWingFlap();
+            SoundManager.encourage();
+            addThought(getRandomThought('encouraged'), 'hopeful');
+
+            // Sparkle effect
+            for (let i = 0; i < 8; i++) {
+                particles.push({
+                    x: penguin.x + penguin.width / 2 + (Math.random() - 0.5) * 40,
+                    y: penguin.y + (Math.random() - 0.5) * 30,
+                    vx: (Math.random() - 0.5) * 3,
+                    vy: (Math.random() - 0.5) * 3,
+                    life: 30,
+                    color: '#FFD700'
+                });
+            }
+
+            lastEncourageTime = Date.now();
+        }
+
+        function checkEncourageButtons() {
+            const now = Date.now();
+            const container = document.getElementById('encourageButtons');
+
+            // Show new buttons every 12-20 seconds if container is empty
+            if (container && container.children.length === 0 && now - lastEncourageTime > 12000 + Math.random() * 8000) {
+                if (Math.random() < 0.4) { // 40% chance when timer triggers
+                    showEncourageButtons();
+                }
+                lastEncourageTime = now;
+            }
+        }
+
         let lastThoughtTime = 0;
         let lastThoughtDistance = 0;
         let thoughtCount = 0;
 
         function addThought(text, type = 'normal') {
-            const stream = document.getElementById('thoughtStream');
-            if (!stream) return;
+            const container = document.getElementById('floatingThoughts');
+            if (!container) return;
 
             const thought = document.createElement('div');
-            thought.className = 'thought' + (type === 'warning' ? ' warning' : type === 'hopeful' ? ' hopeful' : '');
+            thought.className = 'floating-thought' + (type === 'warning' ? ' warning' : type === 'hopeful' ? ' hopeful' : '');
             thought.textContent = text;
 
-            stream.insertBefore(thought, stream.firstChild);
+            container.appendChild(thought);
 
-            // Keep only last 20 thoughts
-            while (stream.children.length > 20) {
-                stream.removeChild(stream.lastChild);
-            }
+            // Remove after animation completes
+            setTimeout(() => {
+                if (thought.parentNode) thought.parentNode.removeChild(thought);
+            }, 8000);
 
             thoughtCount++;
         }
@@ -1128,7 +1187,6 @@
         let snowflakes = [];
         let terrainSlopes = []; // Array of slope segments
 
-        let chatOpen = false;
         let speechTimeout = null;
         let lastHighlightedRank = -1;
 
@@ -1357,10 +1415,6 @@
             document.getElementById('leaderboardBtn').addEventListener('click', showLeaderboard);
             document.getElementById('backFromLeaderboard').addEventListener('click', hideLeaderboard);
             document.getElementById('saveScoreBtn').addEventListener('click', saveScore);
-            document.getElementById('gameChatSend').addEventListener('click', sendGameChat);
-            document.getElementById('gameChat').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') sendGameChat();
-            });
 
             // Win screen buttons
             document.getElementById('winRestartBtn').addEventListener('click', startGame);
@@ -1405,8 +1459,8 @@
             lastThoughtTime = Date.now();
             lastThoughtDistance = 0;
             thoughtCount = 0;
-            const thoughtStream = document.getElementById('thoughtStream');
-            if (thoughtStream) thoughtStream.innerHTML = '';
+            const floatingThoughts = document.getElementById('floatingThoughts');
+            if (floatingThoughts) floatingThoughts.innerHTML = '';
             addThought("The journey begins...", 'hopeful');
 
             resetPenguin();
@@ -1422,10 +1476,12 @@
             document.getElementById('leaderboardScreen').classList.add('hidden');
             document.getElementById('winScreen').classList.add('hidden');
             document.getElementById('distanceOverlay').classList.remove('hidden');
-            document.getElementById('chatHint').classList.remove('hidden');
             document.getElementById('sleepMessage').classList.remove('visible');
             document.getElementById('pauseButton').classList.remove('hidden');
+            document.getElementById('encourageButtons').classList.remove('hidden');
+            document.getElementById('encourageButtons').innerHTML = '';
             document.querySelector('.pause-icon').textContent = '❚❚';
+            lastEncourageTime = Date.now();
 
             // Reset win screen save button
             document.getElementById('winSaveScoreBtn').textContent = 'Record Journey';
@@ -1453,22 +1509,13 @@
 
         // ==================== INPUT HANDLING ====================
         function handleKeyDown(e) {
-            if (e.code === 'Space' && gameRunning && !chatOpen && !gamePaused) {
+            if (e.code === 'Space' && gameRunning && !gamePaused) {
                 e.preventDefault();
                 handleJump();
             }
 
-            if (e.code === 'Enter' && gameRunning && !penguin.sleeping && !gamePaused) {
-                e.preventDefault();
-                toggleChat();
-            }
-
-            if (e.code === 'Escape') {
-                if (chatOpen) {
-                    toggleChat();
-                } else if (gameRunning && !penguin.sleeping) {
-                    togglePause();
-                }
+            if (e.code === 'Escape' && gameRunning && !penguin.sleeping) {
+                togglePause();
             }
         }
 
@@ -1485,7 +1532,7 @@
         }
 
         function handleClick(e) {
-            if (!gameRunning || chatOpen || penguin.sleeping) return;
+            if (!gameRunning || gamePaused || penguin.sleeping) return;
             e.preventDefault();
             handleJump();
         }
@@ -1514,63 +1561,6 @@
             }
         }
 
-        function toggleChat() {
-            chatOpen = !chatOpen;
-            const container = document.getElementById('gameChatContainer');
-            const hint = document.getElementById('chatHint');
-
-            if (chatOpen) {
-                container.classList.add('active');
-                hint.classList.add('hidden');
-                document.getElementById('gameChat').focus();
-            } else {
-                container.classList.remove('active');
-                hint.classList.remove('hidden');
-                document.getElementById('gameChat').value = '';
-            }
-        }
-
-        function sendGameChat() {
-            const input = document.getElementById('gameChat');
-            const message = input.value.trim();
-            if (!message) return;
-
-            input.value = '';
-
-            // Check if encouraging
-            const isEncouraging = ENCOURAGING_PATTERNS.some(pattern => pattern.test(message));
-            console.log('Message:', message, 'Encouraging:', isEncouraging);
-
-            if (isEncouraging) {
-                hope = Math.min(100, hope + CONFIG.encouragementHopeBoost);
-                console.log('Hope boosted to:', hope);
-                showSpeechBubble(PENGUIN_RESPONSES.encouraged[Math.floor(Math.random() * PENGUIN_RESPONSES.encouraged.length)]);
-                triggerWingFlap();
-                SoundManager.encourage();
-                addThought(getRandomThought('encouraged'), 'hopeful');
-
-                // Sparkle effect
-                for (let i = 0; i < 8; i++) {
-                    particles.push({
-                        x: penguin.x + penguin.width / 2 + (Math.random() - 0.5) * 40,
-                        y: penguin.y + (Math.random() - 0.5) * 30,
-                        vx: (Math.random() - 0.5) * 3,
-                        vy: (Math.random() - 0.5) * 3,
-                        life: 30,
-                        color: '#FFD700'
-                    });
-                }
-            } else {
-                // Still show response but no hope boost
-                let responses = PENGUIN_RESPONSES.neutral;
-                if (hope < 30) responses = PENGUIN_RESPONSES.lowHope;
-                if (energy < 30) responses = PENGUIN_RESPONSES.lowEnergy;
-                showSpeechBubble(responses[Math.floor(Math.random() * responses.length)]);
-            }
-
-            toggleChat();
-        }
-
         function showSpeechBubble(text) {
             const bubble = document.getElementById('speechBubble');
             bubble.textContent = text;
@@ -1590,6 +1580,7 @@
             render();
             updateUI();
             checkForThoughts();
+            checkEncourageButtons();
 
             requestAnimationFrame(gameLoop);
         }
@@ -1597,8 +1588,8 @@
         function update() {
             if (penguin.sleeping) return;
 
-            // Pause game while typing encouragement or paused
-            if (chatOpen || gamePaused) return;
+            // Pause game if paused
+            if (gamePaused) return;
 
             // Calculate speed based on hope and energy
             const hopeFactor = 0.5 + (hope / 200);
@@ -1823,8 +1814,7 @@
             SoundManager.stopMusic();
 
             document.getElementById('distanceOverlay').classList.add('hidden');
-            document.getElementById('chatHint').classList.add('hidden');
-            document.getElementById('gameChatContainer').classList.remove('active');
+            document.getElementById('encourageButtons').classList.add('hidden');
             document.getElementById('pauseButton').classList.add('hidden');
 
             winAnimationLoop();
@@ -2156,10 +2146,9 @@
             document.getElementById('finalDistance').textContent = distance.toFixed(2);
             document.getElementById('finalFriends').textContent = friends;
             document.getElementById('distanceOverlay').classList.add('hidden');
-            document.getElementById('chatHint').classList.add('hidden');
-            document.getElementById('gameChatContainer').classList.remove('active');
             document.getElementById('sleepMessage').classList.remove('visible');
             document.getElementById('pauseButton').classList.add('hidden');
+            document.getElementById('encourageButtons').classList.add('hidden');
             document.getElementById('gameOverScreen').classList.remove('hidden');
             document.getElementById('playerName').focus();
         }
