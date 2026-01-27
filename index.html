@@ -1038,6 +1038,9 @@
         function update() {
             if (penguin.sleeping) return;
 
+            // Pause game while typing encouragement
+            if (chatOpen) return;
+
             // Calculate speed based on hope and energy
             const hopeFactor = 0.5 + (hope / 200);
             const energyFactor = 0.5 + (energy / 200);
@@ -1534,9 +1537,11 @@
         function saveWinScore() {
             const nameInput = document.getElementById('winPlayerName');
             const name = nameInput.value.trim() || 'The Dreamer';
+            // Sanitize name - strip potentially dangerous characters
+            const sanitizedName = name.substring(0, 15).replace(/[<>\"'&]/g, '');
 
             const entry = {
-                name: name.substring(0, 15),
+                name: sanitizedName || 'The Dreamer',
                 distance: CONFIG.goalDistance,
                 friends: friends,
                 date: new Date().toISOString(),
@@ -1762,9 +1767,11 @@
         function saveScore() {
             const nameInput = document.getElementById('playerName');
             const name = nameInput.value.trim() || 'Anonymous';
+            // Sanitize name - strip potentially dangerous characters
+            const sanitizedName = name.substring(0, 15).replace(/[<>\"'&]/g, '');
 
             const entry = {
-                name: name.substring(0, 15),
+                name: sanitizedName || 'Anonymous',
                 distance: parseFloat(distance.toFixed(2)),
                 friends: friends,
                 date: new Date().toISOString()
