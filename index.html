@@ -89,10 +89,13 @@
             position: absolute;
             top: 10px;
             left: 10px;
-            width: 220px;
+            width: 240px;
             pointer-events: none;
             overflow: hidden;
-            height: 100px;
+            height: 120px;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 4px;
         }
 
         .floating-thought {
@@ -101,9 +104,7 @@
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
             padding: 2px 0;
             animation: floatUp 8s forwards;
-            position: absolute;
-            bottom: 0;
-            left: 0;
+            position: relative;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -119,10 +120,10 @@
         }
 
         @keyframes floatUp {
-            0% { opacity: 0; transform: translateY(0); }
-            10% { opacity: 1; }
-            70% { opacity: 1; }
-            100% { opacity: 0; transform: translateY(-80px); }
+            0% { opacity: 0; transform: translateY(10px); }
+            15% { opacity: 1; transform: translateY(0); }
+            75% { opacity: 1; }
+            100% { opacity: 0; }
         }
 
         /* Encouragement buttons below canvas */
@@ -1091,11 +1092,9 @@
             const now = Date.now();
             const container = document.getElementById('encourageButtons');
 
-            // Show new buttons every 12-20 seconds if container is empty
-            if (container && container.children.length === 0 && now - lastEncourageTime > 12000 + Math.random() * 8000) {
-                if (Math.random() < 0.4) { // 40% chance when timer triggers
-                    showEncourageButtons();
-                }
+            // Show new buttons every 5-8 seconds if container is empty
+            if (container && container.children.length === 0 && now - lastEncourageTime > 5000 + Math.random() * 3000) {
+                showEncourageButtons();
                 lastEncourageTime = now;
             }
         }
@@ -1200,17 +1199,18 @@
 
         // Colors
         const COLORS = {
-            skyTop: '#5C7A99',
-            skyMid: '#8AACC4',
-            skyBottom: '#B8D0E0',
-            mountainFar: '#6B8099',
-            mountainMid: '#8099AD',
-            mountainNear: '#99ADC0',
-            iceShadow: '#A8BED0',
-            iceLight: '#E0EBF5',
+            skyTop: '#4A6B8C',
+            skyMid: '#7AA4C0',
+            skyBottom: '#C0D8E8',
+            mountainFar: '#5A7090',
+            mountainMid: '#7090A8',
+            mountainNear: '#8AABC5',
+            iceShadow: '#98B5CC',
+            iceLight: '#D8E8F2',
             iceHighlight: '#FFFFFF',
-            penguin: '#0D0D1A',
-            penguinBelly: '#F0F5FA'
+            penguin: '#0A0A14',
+            penguinBelly: '#F5F8FC',
+            penguinOutline: '#050508'
         };
 
         // ==================== SOUND SYSTEM ====================
@@ -2487,51 +2487,55 @@
             const progress = distance / CONFIG.goalDistance;
             const scale = 1 + progress * 0.5;
 
+            // Scale factors to adapt to canvas size (designed for 600x420)
+            const sx = canvas.width / 600;
+            const sy = canvas.height / 420;
+
             // Far mountains
             ctx.fillStyle = COLORS.mountainFar;
             ctx.beginPath();
-            ctx.moveTo(0, 180);
-            ctx.lineTo(60 * scale, 100 - progress * 30);
-            ctx.lineTo(120, 140);
-            ctx.lineTo(200 * scale, 70 - progress * 25);
-            ctx.lineTo(280, 130);
-            ctx.lineTo(350, 90 - progress * 20);
-            ctx.lineTo(420, 125);
-            ctx.lineTo(500 * scale, 60 - progress * 30);
-            ctx.lineTo(560, 110);
-            ctx.lineTo(600, 100);
-            ctx.lineTo(600, 180);
+            ctx.moveTo(0, 180 * sy);
+            ctx.lineTo(60 * scale * sx, (100 - progress * 30) * sy);
+            ctx.lineTo(120 * sx, 140 * sy);
+            ctx.lineTo(200 * scale * sx, (70 - progress * 25) * sy);
+            ctx.lineTo(280 * sx, 130 * sy);
+            ctx.lineTo(350 * sx, (90 - progress * 20) * sy);
+            ctx.lineTo(420 * sx, 125 * sy);
+            ctx.lineTo(500 * scale * sx, (60 - progress * 30) * sy);
+            ctx.lineTo(560 * sx, 110 * sy);
+            ctx.lineTo(canvas.width, 100 * sy);
+            ctx.lineTo(canvas.width, 180 * sy);
             ctx.closePath();
             ctx.fill();
 
             // Mid mountains
             ctx.fillStyle = COLORS.mountainMid;
             ctx.beginPath();
-            ctx.moveTo(0, 200);
-            ctx.lineTo(80, 140 - progress * 20);
-            ctx.lineTo(160, 170);
-            ctx.lineTo(240, 120 - progress * 25);
-            ctx.lineTo(320, 160);
-            ctx.lineTo(400, 130 - progress * 20);
-            ctx.lineTo(480, 155);
-            ctx.lineTo(560, 115 - progress * 25);
-            ctx.lineTo(600, 140);
-            ctx.lineTo(600, 200);
+            ctx.moveTo(0, 200 * sy);
+            ctx.lineTo(80 * sx, (140 - progress * 20) * sy);
+            ctx.lineTo(160 * sx, 170 * sy);
+            ctx.lineTo(240 * sx, (120 - progress * 25) * sy);
+            ctx.lineTo(320 * sx, 160 * sy);
+            ctx.lineTo(400 * sx, (130 - progress * 20) * sy);
+            ctx.lineTo(480 * sx, 155 * sy);
+            ctx.lineTo(560 * sx, (115 - progress * 25) * sy);
+            ctx.lineTo(canvas.width, 140 * sy);
+            ctx.lineTo(canvas.width, 200 * sy);
             ctx.closePath();
             ctx.fill();
 
             // Near mountains
             ctx.fillStyle = COLORS.mountainNear;
             ctx.beginPath();
-            ctx.moveTo(0, 230);
-            ctx.lineTo(100, 175 - progress * 15);
-            ctx.lineTo(180, 200);
-            ctx.lineTo(280, 160 - progress * 20);
-            ctx.lineTo(380, 190);
-            ctx.lineTo(460, 165 - progress * 15);
-            ctx.lineTo(540, 185);
-            ctx.lineTo(600, 170);
-            ctx.lineTo(600, 230);
+            ctx.moveTo(0, 230 * sy);
+            ctx.lineTo(100 * sx, (175 - progress * 15) * sy);
+            ctx.lineTo(180 * sx, 200 * sy);
+            ctx.lineTo(280 * sx, (160 - progress * 20) * sy);
+            ctx.lineTo(380 * sx, 190 * sy);
+            ctx.lineTo(460 * sx, (165 - progress * 15) * sy);
+            ctx.lineTo(540 * sx, 185 * sy);
+            ctx.lineTo(canvas.width, 170 * sy);
+            ctx.lineTo(canvas.width, 230 * sy);
             ctx.closePath();
             ctx.fill();
         }
@@ -2637,11 +2641,14 @@
             ctx.rotate(waddle + slopeTilt);
             ctx.translate(-(x + 20), -(y + 48));
 
-            // Body
+            // Body with outline
             ctx.fillStyle = COLORS.penguin;
+            ctx.strokeStyle = COLORS.penguinOutline;
+            ctx.lineWidth = 1.5;
             ctx.beginPath();
             ctx.ellipse(x + 20, y + 28, 14, 20, 0, 0, Math.PI * 2);
             ctx.fill();
+            ctx.stroke();
 
             // Belly
             ctx.fillStyle = COLORS.penguinBelly;
@@ -2649,11 +2656,13 @@
             ctx.ellipse(x + 20, y + 30, 9, 14, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            // Head
+            // Head with outline
             ctx.fillStyle = COLORS.penguin;
+            ctx.strokeStyle = COLORS.penguinOutline;
             ctx.beginPath();
             ctx.arc(x + 20, y + 9, 11, 0, Math.PI * 2);
             ctx.fill();
+            ctx.stroke();
 
             // Eyes
             ctx.fillStyle = '#fff';
@@ -2670,18 +2679,21 @@
             ctx.arc(x + 25, y + 7 + pupilOffset, 1.5, 0, Math.PI * 2);
             ctx.fill();
 
-            // Beak
-            ctx.fillStyle = '#D4956A';
+            // Beak with outline
+            ctx.fillStyle = '#E8A060';
+            ctx.strokeStyle = '#B07840';
+            ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(x + 20, y + 11);
             ctx.lineTo(x + 25, y + 14);
             ctx.lineTo(x + 20, y + 16);
             ctx.closePath();
             ctx.fill();
+            ctx.stroke();
 
             // Feet (alternate slightly with waddle)
             const footOffset = Math.sin(penguin.walkCycle) * 1.5;
-            ctx.fillStyle = '#D4956A';
+            ctx.fillStyle = '#E8A060';
             ctx.beginPath();
             ctx.ellipse(x + 14, y + 48 - footOffset, 5, 2.5, -0.2, 0, Math.PI * 2);
             ctx.ellipse(x + 26, y + 48 + footOffset, 5, 2.5, 0.2, 0, Math.PI * 2);
@@ -2713,33 +2725,43 @@
         function drawFriendPenguin(x, y) {
             const s = 0.7;
 
-            ctx.fillStyle = 'rgba(60, 80, 100, 0.15)';
+            // Shadow
+            ctx.fillStyle = 'rgba(60, 80, 100, 0.2)';
             ctx.beginPath();
             ctx.ellipse(x + 15, y + 38, 10 * s, 3 * s, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            ctx.fillStyle = '#2D3A4A';
+            // Body with outline
+            ctx.fillStyle = '#1A2838';
+            ctx.strokeStyle = '#0A1420';
+            ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.ellipse(x + 15, y + 24, 12 * s, 16 * s, 0, 0, Math.PI * 2);
             ctx.fill();
+            ctx.stroke();
 
+            // Belly
             ctx.fillStyle = COLORS.penguinBelly;
             ctx.beginPath();
             ctx.ellipse(x + 15, y + 26, 8 * s, 11 * s, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            ctx.fillStyle = '#2D3A4A';
+            // Head with outline
+            ctx.fillStyle = '#1A2838';
             ctx.beginPath();
             ctx.arc(x + 15, y + 9, 9 * s, 0, Math.PI * 2);
             ctx.fill();
+            ctx.stroke();
 
+            // Eyes
             ctx.fillStyle = '#fff';
             ctx.beginPath();
             ctx.arc(x + 12, y + 7, 3 * s, 0, Math.PI * 2);
             ctx.arc(x + 18, y + 7, 3 * s, 0, Math.PI * 2);
             ctx.fill();
 
-            ctx.fillStyle = '#C48560';
+            // Beak
+            ctx.fillStyle = '#E8A060';
             ctx.beginPath();
             ctx.moveTo(x + 15, y + 10);
             ctx.lineTo(x + 19, y + 12);
@@ -2763,30 +2785,41 @@
         }
 
         function drawFish(x, y) {
-            ctx.fillStyle = '#7A9CB8';
+            // Fish body with outline
+            ctx.fillStyle = '#6898C0';
+            ctx.strokeStyle = '#4070A0';
+            ctx.lineWidth = 1.5;
             ctx.beginPath();
             ctx.ellipse(x + 12, y + 8, 10, 6, 0, 0, Math.PI * 2);
             ctx.fill();
+            ctx.stroke();
 
+            // Tail
             ctx.beginPath();
             ctx.moveTo(x + 2, y + 8);
             ctx.lineTo(x - 4, y + 2);
             ctx.lineTo(x - 4, y + 14);
             ctx.closePath();
             ctx.fill();
+            ctx.stroke();
 
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            // Highlight
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
             ctx.beginPath();
             ctx.ellipse(x + 10, y + 5, 4, 2.5, -0.2, 0, Math.PI * 2);
             ctx.fill();
 
-            ctx.fillStyle = '#2D3A4A';
+            // Eye
+            ctx.fillStyle = '#1A2838';
             ctx.beginPath();
-            ctx.arc(x + 17, y + 6, 1.5, 0, Math.PI * 2);
+            ctx.arc(x + 17, y + 6, 2, 0, Math.PI * 2);
             ctx.fill();
         }
 
         function drawObstacle(obs) {
+            ctx.strokeStyle = '#80A0B8';
+            ctx.lineWidth = 1.5;
+
             if (obs.type === 'ice_chunk') {
                 ctx.fillStyle = COLORS.iceLight;
                 ctx.beginPath();
@@ -2797,8 +2830,9 @@
                 ctx.lineTo(obs.x + obs.width * 0.15, obs.y + obs.height * 0.5);
                 ctx.closePath();
                 ctx.fill();
+                ctx.stroke();
 
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
                 ctx.beginPath();
                 ctx.moveTo(obs.x + obs.width * 0.4, obs.y + obs.height * 0.15);
                 ctx.lineTo(obs.x + obs.width * 0.5, obs.y + obs.height * 0.5);
@@ -2813,6 +2847,7 @@
                 ctx.quadraticCurveTo(obs.x + obs.width * 0.75, obs.y - obs.height * 0.1, obs.x + obs.width, obs.y + obs.height);
                 ctx.closePath();
                 ctx.fill();
+                ctx.stroke();
             }
         }
 
