@@ -11,6 +11,11 @@
             box-sizing: border-box;
         }
 
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
         body {
             background: linear-gradient(180deg, #5C7A99 0%, #8AACC4 40%, #B8D0E0 100%);
             min-height: 100vh;
@@ -18,10 +23,9 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            padding-top: 15px;
+            padding: 10px;
             font-family: 'Georgia', 'Times New Roman', serif;
             color: #2C3E50;
-            overflow-x: hidden;
         }
 
         h1 {
@@ -45,6 +49,8 @@
             display: flex;
             gap: 15px;
             align-items: flex-start;
+            flex: 1;
+            max-height: calc(100vh - 80px);
         }
 
         #gameContainer {
@@ -56,6 +62,8 @@
 
         #gameCanvas {
             display: block;
+            max-width: 100%;
+            height: auto;
         }
 
         /* Stats Panel */
@@ -564,11 +572,13 @@
         }
 
         footer {
-            margin-top: 15px;
-            font-size: 0.85rem;
+            margin-top: auto;
+            padding: 8px;
+            font-size: 0.8rem;
             opacity: 0.6;
             color: #5A7A94;
             font-style: italic;
+            flex-shrink: 0;
         }
 
         @media (max-width: 900px) {
@@ -578,13 +588,30 @@
             }
             #statsPanel {
                 width: 100%;
-                max-width: 500px;
+                max-width: 600px;
                 flex-direction: row;
                 flex-wrap: wrap;
             }
             .stat-group {
                 flex: 1;
                 min-width: 140px;
+            }
+        }
+
+        @media (max-width: 650px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            .subtitle {
+                font-size: 0.8rem;
+                margin-bottom: 5px;
+            }
+            #statsPanel {
+                padding: 10px;
+                gap: 8px;
+            }
+            .stat-group {
+                padding: 6px;
             }
         }
     </style>
@@ -952,23 +979,23 @@
         function checkForThoughts() {
             const now = Date.now();
 
-            // Periodic philosophical thoughts (every 8-15 seconds)
-            if (now - lastThoughtTime > 8000 + Math.random() * 7000) {
+            // Periodic philosophical thoughts (every 25-45 seconds)
+            if (now - lastThoughtTime > 25000 + Math.random() * 20000) {
                 lastThoughtTime = now;
 
                 // Check conditions for contextual thoughts
-                if (hope < 25) {
+                if (hope < 25 && Math.random() < 0.6) {
                     addThought(getRandomThought('lowHope'), 'warning');
-                } else if (energy < 25) {
+                } else if (energy < 25 && Math.random() < 0.6) {
                     addThought(getRandomThought('lowEnergy'), 'warning');
-                } else if (Math.random() < 0.7) {
+                } else if (Math.random() < 0.4) {
                     addThought(getRandomThought('philosophical'));
                 }
             }
 
-            // Milestone thoughts (every ~10km)
-            if (distance - lastThoughtDistance >= 10) {
-                lastThoughtDistance = Math.floor(distance / 10) * 10;
+            // Milestone thoughts (every ~15km)
+            if (distance - lastThoughtDistance >= 15) {
+                lastThoughtDistance = Math.floor(distance / 15) * 15;
                 setTimeout(() => {
                     addThought(getRandomThought('milestone'), 'hopeful');
                 }, 1000);
@@ -1183,9 +1210,36 @@
         };
 
         // ==================== INITIALIZATION ====================
+        function resizeCanvas() {
+            const maxWidth = Math.min(800, window.innerWidth - 240);
+            const maxHeight = window.innerHeight - 120;
+            const aspectRatio = 600 / 420;
+
+            let width = maxWidth;
+            let height = width / aspectRatio;
+
+            if (height > maxHeight) {
+                height = maxHeight;
+                width = height * aspectRatio;
+            }
+
+            canvas.width = Math.floor(width);
+            canvas.height = Math.floor(height);
+
+            // Update CONFIG.groundHeight proportionally
+            CONFIG.groundHeight = Math.floor(45 * (canvas.height / 420));
+        }
+
         function init() {
             canvas = document.getElementById('gameCanvas');
             ctx = canvas.getContext('2d');
+
+            // Resize canvas to fit screen
+            resizeCanvas();
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                if (!gameRunning) render();
+            });
 
             // Initialize sound system
             SoundManager.init();
@@ -1549,7 +1603,7 @@
                     energy = Math.max(0, energy - 10);
                     showSpeechBubble("Oof! That hurt...");
                     SoundManager.hitObstacle();
-                    if (Math.random() < 0.5) addThought(getRandomThought('obstacle'), 'warning');
+                    if (Math.random() < 0.2) addThought(getRandomThought('obstacle'), 'warning');
 
                     // Knock back effect
                     for (let i = 0; i < 5; i++) {
@@ -1577,7 +1631,7 @@
                     energy = Math.min(100, energy + CONFIG.fishEnergyBoost);
                     triggerWingFlap();
                     SoundManager.collectFish();
-                    if (Math.random() < 0.4) addThought(getRandomThought('fish'), 'hopeful');
+                    if (Math.random() < 0.15) addThought(getRandomThought('fish'), 'hopeful');
 
                     for (let i = 0; i < 6; i++) {
                         particles.push({
