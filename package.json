@@ -1,0 +1,11 @@
+{
+  "name": "lonely-penguin",
+  "version": "1.0.0",
+  "description": "A philosophical browser game about a penguin's journey to the mountains",
+  "scripts": {
+    "dev": "npx serve -l 3000",
+    "start": "npx serve -l 3000"
+  },
+  "keywords": ["game", "penguin", "canvas"],
+  "license": "MIT"
+}
