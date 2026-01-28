@@ -17,47 +17,48 @@
         }
 
         body {
-            background: linear-gradient(180deg, #5C7A99 0%, #8AACC4 40%, #B8D0E0 100%);
+            background: linear-gradient(180deg, #3D5A73 0%, #5C7A99 30%, #8AACC4 65%, #B8D0E0 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            padding: 10px;
+            padding: 8px 10px;
             font-family: 'Georgia', 'Times New Roman', serif;
             color: #2C3E50;
         }
 
         h1 {
-            font-size: 2rem;
-            margin-bottom: 5px;
-            text-shadow: 1px 1px 2px rgba(255,255,255,0.6);
-            color: #2A4560;
+            font-size: 1.9rem;
+            margin-bottom: 2px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.25), 0 0 8px rgba(255,255,255,0.3);
+            color: #E8F0F6;
             font-weight: normal;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
         }
 
         .subtitle {
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-            opacity: 0.8;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
             font-style: italic;
-            color: #5A7A94;
+            color: #D0DDE8;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            letter-spacing: 0.5px;
         }
 
         #mainContainer {
             display: flex;
-            gap: 15px;
-            align-items: flex-start;
+            gap: 12px;
+            align-items: stretch;
             flex: 1;
-            max-height: calc(100vh - 80px);
+            max-height: calc(100vh - 70px);
         }
 
         #gameContainer {
             position: relative;
-            border-radius: 8px;
+            border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 8px 32px rgba(60, 80, 100, 0.3);
+            box-shadow: 0 8px 32px rgba(30, 50, 70, 0.4), 0 2px 8px rgba(0,0,0,0.2);
         }
 
         #gameCanvas {
@@ -69,19 +70,22 @@
         /* Stats Panel */
         #statsPanel {
             width: 200px;
-            background: rgba(255,255,255,0.25);
-            backdrop-filter: blur(4px);
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(8px);
             border-radius: 12px;
-            padding: 15px;
+            padding: 12px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 8px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            justify-content: space-between;
         }
 
         .stat-group {
             background: rgba(255,255,255,0.3);
             border-radius: 8px;
-            padding: 10px;
+            padding: 8px 10px;
         }
 
         /* Floating thoughts - top left of canvas */
@@ -154,33 +158,41 @@
             100% { opacity: 0; }
         }
 
-        /* Encouragement buttons below canvas */
+        /* Encouragement buttons - positioned at bottom of canvas */
         #encourageButtons {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
             gap: 8px;
             justify-content: center;
-            padding: 8px;
+            padding: 6px;
             flex-wrap: wrap;
-            min-height: 44px;
+            z-index: 5;
+            max-width: 90%;
         }
 
         .encourage-btn {
             padding: 6px 14px;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-family: 'Georgia', serif;
-            background: rgba(255,255,255,0.8);
-            border: 2px solid rgba(90, 122, 148, 0.3);
+            background: rgba(255,255,255,0.85);
+            border: 1px solid rgba(90, 122, 148, 0.25);
             border-radius: 20px;
             color: #3D5A73;
             cursor: pointer;
             transition: all 0.3s;
             animation: fadeInBtn 0.5s forwards;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            backdrop-filter: blur(4px);
         }
 
         .encourage-btn:hover {
             background: rgba(255,255,255,1);
-            border-color: rgba(90, 122, 148, 0.6);
-            transform: scale(1.05);
+            border-color: rgba(90, 122, 148, 0.5);
+            transform: scale(1.06);
+            box-shadow: 0 3px 12px rgba(0,0,0,0.2);
         }
 
         .encourage-btn.fading {
@@ -349,80 +361,87 @@
             align-items: center;
             justify-content: center;
             background: linear-gradient(180deg,
-                rgba(90, 120, 150, 0.95) 0%,
-                rgba(140, 170, 195, 0.95) 40%,
-                rgba(180, 200, 215, 0.95) 100%);
-            backdrop-filter: blur(6px);
-            border-radius: 8px;
-            padding: 20px;
+                rgba(45, 70, 95, 0.97) 0%,
+                rgba(80, 115, 145, 0.96) 35%,
+                rgba(120, 155, 180, 0.95) 70%,
+                rgba(160, 185, 205, 0.95) 100%);
+            backdrop-filter: blur(8px);
+            border-radius: 10px;
+            padding: 18px;
             overflow-y: auto;
         }
 
         #startScreen h2, #gameOverScreen h2, #leaderboardScreen h2 {
-            font-size: 1.8rem;
-            margin-bottom: 15px;
-            color: #3D5A73;
+            font-size: 1.7rem;
+            margin-bottom: 12px;
+            color: #fff;
             font-weight: normal;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
 
         /* Start Screen specific */
         #startScreen {
             background: linear-gradient(180deg,
-                rgba(70, 100, 130, 0.97) 0%,
-                rgba(100, 140, 170, 0.95) 30%,
-                rgba(150, 180, 200, 0.95) 70%,
-                rgba(200, 215, 225, 0.95) 100%);
+                rgba(45, 70, 95, 0.98) 0%,
+                rgba(65, 100, 130, 0.97) 25%,
+                rgba(90, 130, 160, 0.96) 55%,
+                rgba(130, 165, 190, 0.96) 80%,
+                rgba(170, 195, 210, 0.95) 100%);
         }
 
         #startScreen .screen-title {
             font-size: 1.5rem;
             color: #fff;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            margin-bottom: 8px;
-            letter-spacing: 1px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.4), 0 0 20px rgba(255,255,255,0.1);
+            margin-bottom: 6px;
+            letter-spacing: 2px;
         }
 
-        #startScreen .penguin-icon {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));
+        #startScreen .penguin-icon-canvas {
+            margin-bottom: 8px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
         }
 
         #startScreen .opening-quote {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-style: italic;
             color: rgba(255,255,255,0.95);
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-            margin-bottom: 15px;
-            padding: 10px 20px;
-            background: rgba(255,255,255,0.15);
-            border-radius: 8px;
-            border-left: 3px solid rgba(255,255,255,0.4);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+            margin-bottom: 12px;
+            padding: 10px 22px;
+            background: rgba(255,255,255,0.12);
+            border-radius: 10px;
+            border-left: 3px solid rgba(255,255,255,0.5);
+            max-width: 380px;
+            text-align: center;
+            line-height: 1.5;
         }
 
         #startScreen .story-text {
             text-align: center;
-            color: rgba(255,255,255,0.9);
+            color: rgba(255,255,255,0.92);
             line-height: 1.7;
-            margin: 10px 0;
-            max-width: 360px;
-            font-size: 0.95rem;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            margin: 8px 0;
+            max-width: 400px;
+            font-size: 0.92rem;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+            text-wrap: balance;
         }
 
         #startScreen .game-tips {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.15);
             border-radius: 10px;
-            padding: 12px 18px;
-            margin: 12px 0;
-            max-width: 320px;
+            padding: 10px 20px;
+            margin: 10px 0;
+            max-width: 340px;
+            border: 1px solid rgba(255,255,255,0.12);
         }
 
         #startScreen .game-tips p {
             color: rgba(255,255,255,0.95);
-            font-size: 0.9rem;
-            margin: 6px 0;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            font-size: 0.88rem;
+            margin: 5px 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
 
         #startScreen .game-tips b {
@@ -430,12 +449,13 @@
         }
 
         #startScreen .controls-hint {
-            margin-top: 15px;
-            font-size: 0.8rem;
-            color: rgba(255,255,255,0.7);
-            background: rgba(0,0,0,0.15);
-            padding: 6px 14px;
+            margin-top: 12px;
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.75);
+            background: rgba(0,0,0,0.2);
+            padding: 5px 16px;
             border-radius: 15px;
+            letter-spacing: 0.5px;
         }
 
         /* Game Over Screen specific */
@@ -464,22 +484,28 @@
             padding: 12px 30px;
             font-size: 1rem;
             font-family: 'Georgia', serif;
-            background: linear-gradient(135deg, #5A7A94, #4A6B8A);
-            border: none;
+            background: linear-gradient(135deg, #4A7A9A, #3A6585);
+            border: 1px solid rgba(255,255,255,0.2);
             border-radius: 25px;
             color: #fff;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            margin: 6px;
+            transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            letter-spacing: 0.5px;
         }
 
         .btn:hover {
-            transform: scale(1.03);
-            box-shadow: 0 4px 16px rgba(74, 107, 138, 0.4);
+            transform: scale(1.04);
+            box-shadow: 0 4px 20px rgba(50, 80, 110, 0.5);
+            background: linear-gradient(135deg, #5A8AAA, #4A7595);
         }
 
         .btn-secondary {
-            background: linear-gradient(135deg, #8B9CAD, #7A8B9C);
+            background: linear-gradient(135deg, #788DA0, #687D90);
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #8899AA, #788DA0);
         }
 
         .instructions {
@@ -738,12 +764,13 @@
 
         footer {
             margin-top: auto;
-            padding: 8px;
-            font-size: 0.8rem;
-            opacity: 0.6;
-            color: #5A7A94;
+            padding: 4px;
+            font-size: 0.75rem;
+            opacity: 0.5;
+            color: #B0C8D8;
             font-style: italic;
             flex-shrink: 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
         }
 
         @media (max-width: 900px) {
@@ -811,7 +838,7 @@
             </div>
 
             <div id="startScreen">
-                <div class="penguin-icon">🐧</div>
+                <canvas id="penguinIconCanvas" class="penguin-icon-canvas" width="80" height="90"></canvas>
                 <div class="screen-title">A Journey Awaits</div>
 
                 <div class="opening-quote">
@@ -819,21 +846,22 @@
                 </div>
 
                 <p class="story-text">
-                    Something in the distant mountains calls to you.<br>
-                    75 km across the ice. A journey inward as much as outward.
+                    Something in the distant mountains calls to you.
+                    75 km across the ice — a journey inward as much as outward.
                 </p>
 
                 <div class="game-tips">
                     <p><b>🐟 Collect fish</b> to maintain energy</p>
-                    <p><b>💭 Send encouragement</b> to keep hope alive</p>
+                    <p><b>💬 Send encouragement</b> to keep hope alive</p>
                 </div>
 
-                <p class="story-text" style="font-size: 0.9rem; opacity: 0.9;">
-                    The colony waits behind you. The mountains wait ahead.<br>
+                <p class="story-text" style="font-size: 0.88rem; opacity: 0.9;">
+                    The colony waits behind you.
+                    The mountains wait ahead.
                     Perhaps you'll find what you're looking for.
                 </p>
 
-                <div style="margin-top: 15px;">
+                <div style="margin-top: 12px; display: flex; gap: 10px;">
                     <button class="btn" id="startBtn">Begin Journey</button>
                     <button class="btn btn-secondary" id="viewLeaderboardBtn">Leaderboard</button>
                 </div>
@@ -1620,7 +1648,7 @@
         // ==================== INITIALIZATION ====================
         function resizeCanvas() {
             const maxWidth = Math.min(800, window.innerWidth - 240);
-            const maxHeight = window.innerHeight - 120;
+            const maxHeight = window.innerHeight - 90;
             const aspectRatio = 600 / 420;
 
             let width = maxWidth;
@@ -1636,6 +1664,106 @@
 
             // Update CONFIG.groundHeight proportionally
             CONFIG.groundHeight = Math.floor(45 * (canvas.height / 420));
+        }
+
+        function drawStartScreenPenguin() {
+            const pc = document.getElementById('penguinIconCanvas');
+            if (!pc) return;
+            const p = pc.getContext('2d');
+            const cx = 40, baseY = 12;
+
+            // Shadow
+            p.fillStyle = 'rgba(0, 0, 0, 0.15)';
+            p.beginPath();
+            p.ellipse(cx, baseY + 72, 20, 5, 0, 0, Math.PI * 2);
+            p.fill();
+
+            // Body (dark)
+            p.fillStyle = '#1A2838';
+            p.beginPath();
+            p.ellipse(cx, baseY + 44, 20, 28, 0, 0, Math.PI * 2);
+            p.fill();
+
+            // Belly (white)
+            p.fillStyle = '#E8EEF2';
+            p.beginPath();
+            p.ellipse(cx, baseY + 48, 14, 22, 0, 0, Math.PI * 2);
+            p.fill();
+
+            // Head (dark)
+            p.fillStyle = '#1A2838';
+            p.beginPath();
+            p.arc(cx, baseY + 14, 16, 0, Math.PI * 2);
+            p.fill();
+
+            // White face patches (frontal view)
+            p.fillStyle = '#E8EEF2';
+            p.beginPath();
+            p.ellipse(cx - 7, baseY + 12, 6, 8, 0.15, 0, Math.PI * 2);
+            p.fill();
+            p.beginPath();
+            p.ellipse(cx + 7, baseY + 12, 6, 8, -0.15, 0, Math.PI * 2);
+            p.fill();
+
+            // Eyes
+            p.fillStyle = '#fff';
+            p.beginPath();
+            p.arc(cx - 6, baseY + 11, 4.5, 0, Math.PI * 2);
+            p.arc(cx + 6, baseY + 11, 4.5, 0, Math.PI * 2);
+            p.fill();
+
+            // Pupils
+            p.fillStyle = '#1A2838';
+            p.beginPath();
+            p.arc(cx - 5, baseY + 11, 2.2, 0, Math.PI * 2);
+            p.arc(cx + 5, baseY + 11, 2.2, 0, Math.PI * 2);
+            p.fill();
+
+            // Eye shine
+            p.fillStyle = 'rgba(255,255,255,0.8)';
+            p.beginPath();
+            p.arc(cx - 6, baseY + 10, 1.2, 0, Math.PI * 2);
+            p.arc(cx + 4, baseY + 10, 1.2, 0, Math.PI * 2);
+            p.fill();
+
+            // Beak
+            p.fillStyle = '#E8A060';
+            p.strokeStyle = '#C0854A';
+            p.lineWidth = 0.8;
+            p.beginPath();
+            p.moveTo(cx - 5, baseY + 17);
+            p.quadraticCurveTo(cx, baseY + 24, cx + 5, baseY + 17);
+            p.quadraticCurveTo(cx, baseY + 20, cx - 5, baseY + 17);
+            p.closePath();
+            p.fill();
+            p.stroke();
+
+            // Wings (at sides)
+            p.fillStyle = '#243848';
+            // Left wing
+            p.beginPath();
+            p.ellipse(cx - 20, baseY + 42, 6, 16, 0.15, 0, Math.PI * 2);
+            p.fill();
+            // Right wing
+            p.beginPath();
+            p.ellipse(cx + 20, baseY + 42, 6, 16, -0.15, 0, Math.PI * 2);
+            p.fill();
+
+            // Feet
+            p.fillStyle = '#E8A060';
+            p.beginPath();
+            p.ellipse(cx - 10, baseY + 73, 8, 3.5, -0.1, 0, Math.PI * 2);
+            p.fill();
+            p.beginPath();
+            p.ellipse(cx + 10, baseY + 73, 8, 3.5, 0.1, 0, Math.PI * 2);
+            p.fill();
+
+            // Subtle cheek blush
+            p.fillStyle = 'rgba(220, 150, 150, 0.2)';
+            p.beginPath();
+            p.arc(cx - 10, baseY + 16, 3, 0, Math.PI * 2);
+            p.arc(cx + 10, baseY + 16, 3, 0, Math.PI * 2);
+            p.fill();
         }
 
         function init() {
@@ -1692,6 +1820,7 @@
 
             resetPenguin();
             render();
+            drawStartScreenPenguin();
             updateLeaderboardDisplay();
         }
 
