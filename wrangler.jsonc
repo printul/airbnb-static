@@ -1,0 +1,11 @@
+{
+  "name": "lonely-penguin",
+  "compatibility_date": "2026-02-01",
+  "main": "worker.js",
+  "kv_namespaces": [
+    {
+      "binding": "LEADERBOARD",
+      "id": "PENGUIN_LEADERBOARD"
+    }
+  ]
+}
