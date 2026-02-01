@@ -971,7 +971,7 @@
             <div id="leaderboardScreen" class="hidden">
                 <div style="font-size: 2rem; margin-bottom: 8px; filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));">🏆</div>
                 <h2>Leaderboard</h2>
-                <p class="leaderboard-subtitle">Top 20 Journeys</p>
+                <p class="leaderboard-subtitle">Global Top Journeys</p>
                 <div id="leaderboardTable"></div>
                 <p class="total-journeys">
                     Total journeys recorded: <span id="totalJourneys">0</span>
@@ -1587,8 +1587,12 @@
         let winAnimationTimer = 0;
         let arrivalParticles = [];
 
-        // Leaderboard
-        let leaderboard = JSON.parse(localStorage.getItem('penguinLeaderboard')) || [];
+        // Leaderboard (fetched from server — no offline play)
+        let leaderboard = [];
+        // ⚠️  SET THIS to your Cloudflare Worker URL before deploying
+        const WORKER_URL = ''; // e.g. 'https://penguin-scores.your-account.workers.dev' or 'https://yourdomain.com/api'
+        const SCORE_SECRET = 'penguin-default-secret'; // must match Worker env.SCORE_SECRET
+        let gameStartedAt = 0; // wall-clock ms when current game started
 
         // Colors
         const COLORS = {
@@ -1933,7 +1937,7 @@
             resetPenguin();
             render();
             drawStartScreenPenguin();
-            updateLeaderboardDisplay();
+            fetchLeaderboard().then(() => updateLeaderboardDisplay());
         }
 
         function startGame() {
@@ -1944,6 +1948,7 @@
             energy = 100;
             friends = 0;
             currentSpeed = CONFIG.baseSpeed;
+            gameStartedAt = Date.now();
             obstacles = [];
             fish = [];
             friendPenguins = [];
@@ -2624,30 +2629,29 @@
             startWinAnimation();
         }
 
-        function saveWinScore() {
+        async function saveWinScore() {
             const nameInput = document.getElementById('winPlayerName');
             const name = nameInput.value.trim() || 'The Dreamer';
-            // Sanitize name - strip potentially dangerous characters
             const sanitizedName = name.substring(0, 15).replace(/[<>\"'&]/g, '');
+
+            const btn = document.getElementById('winSaveScoreBtn');
+            btn.textContent = 'Submitting...';
+            btn.disabled = true;
 
             const entry = {
                 name: sanitizedName || 'The Dreamer',
                 distance: CONFIG.goalDistance,
                 friends: friends,
-                date: new Date().toISOString(),
                 completed: true
             };
 
-            leaderboard.push(entry);
-            leaderboard.sort((a, b) => b.distance - a.distance);
-
-            localStorage.setItem('penguinLeaderboard', JSON.stringify(leaderboard));
-
-            const rank = leaderboard.findIndex(e => e === entry);
-            lastHighlightedRank = rank;
-
-            document.getElementById('winSaveScoreBtn').textContent = 'Journey Recorded';
-            document.getElementById('winSaveScoreBtn').disabled = true;
+            const result = await submitScore(entry);
+            if (result.error) {
+                btn.textContent = 'Rejected';
+            } else {
+                lastHighlightedRank = result.rank >= 0 ? result.rank : -1;
+                btn.textContent = 'Journey Recorded';
+            }
 
             setTimeout(() => {
                 showLeaderboard();
@@ -2858,42 +2862,43 @@
         }
 
         // ==================== LEADERBOARD ====================
-        function saveScore() {
+        async function saveScore() {
             const nameInput = document.getElementById('playerName');
             const name = nameInput.value.trim() || 'Anonymous';
-            // Sanitize name - strip potentially dangerous characters
             const sanitizedName = name.substring(0, 15).replace(/[<>\"'&]/g, '');
+
+            const btn = document.getElementById('saveScoreBtn');
+            btn.textContent = 'Submitting...';
+            btn.disabled = true;
 
             const entry = {
                 name: sanitizedName || 'Anonymous',
                 distance: parseFloat(distance.toFixed(2)),
                 friends: friends,
-                date: new Date().toISOString()
+                completed: false
             };
 
-            leaderboard.push(entry);
-            leaderboard.sort((a, b) => b.distance - a.distance);
-
-            localStorage.setItem('penguinLeaderboard', JSON.stringify(leaderboard));
-
-            // Find rank of this entry
-            const rank = leaderboard.findIndex(e => e === entry);
-            lastHighlightedRank = rank;
-
-            document.getElementById('saveScoreBtn').textContent = 'Saved!';
-            document.getElementById('saveScoreBtn').disabled = true;
+            const result = await submitScore(entry);
+            if (result.error) {
+                btn.textContent = 'Rejected';
+            } else {
+                lastHighlightedRank = result.rank >= 0 ? result.rank : -1;
+                btn.textContent = 'Saved!';
+            }
 
             setTimeout(() => {
                 showLeaderboard();
             }, 500);
         }
 
-        function showLeaderboard() {
+        async function showLeaderboard() {
             document.getElementById('startScreen').classList.add('hidden');
             document.getElementById('gameOverScreen').classList.add('hidden');
             document.getElementById('winScreen').classList.add('hidden');
             document.getElementById('leaderboardScreen').classList.remove('hidden');
-            updateLeaderboardDisplay();
+            updateLeaderboardDisplay(); // show cached data immediately
+            await fetchLeaderboard();   // then refresh from server
+            updateLeaderboardDisplay(); // re-render with fresh data
         }
 
         function hideLeaderboard() {
@@ -2943,6 +2948,65 @@
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+
+        // ==================== ANTI-CHEAT & API ====================
+        async function computeScoreToken(dist, fr, dur) {
+            const encoder = new TextEncoder();
+            const key = await crypto.subtle.importKey(
+                'raw', encoder.encode(SCORE_SECRET),
+                { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+            );
+            const msg = `${dist}:${fr}:${dur}`;
+            const sig = await crypto.subtle.sign('HMAC', key, encoder.encode(msg));
+            return [...new Uint8Array(sig)]
+                .map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        async function fetchLeaderboard() {
+            if (!WORKER_URL) return;
+            try {
+                const res = await fetch(WORKER_URL + '/api/scores');
+                if (!res.ok) return;
+                const data = await res.json();
+                leaderboard = data.scores || [];
+            } catch (e) {
+                console.warn('Failed to fetch leaderboard:', e);
+            }
+        }
+
+        async function submitScore(entry) {
+            if (!WORKER_URL) {
+                console.warn('WORKER_URL not set — score not submitted');
+                return { rank: -1 };
+            }
+            const dur = Math.floor((Date.now() - gameStartedAt) / 1000);
+            const token = await computeScoreToken(
+                Math.round(entry.distance * 100) / 100,
+                entry.friends,
+                dur
+            );
+            const res = await fetch(WORKER_URL + '/api/scores', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: entry.name,
+                    distance: Math.round(entry.distance * 100) / 100,
+                    friends: entry.friends,
+                    completed: !!entry.completed,
+                    duration: dur,
+                    token
+                })
+            });
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                console.warn('Score rejected:', errData.error || res.status);
+                return { rank: -1, error: errData.error };
+            }
+            const data = await res.json();
+            // Refresh leaderboard after submission
+            await fetchLeaderboard();
+            return data;
         }
 
         // ==================== RENDERING ====================
